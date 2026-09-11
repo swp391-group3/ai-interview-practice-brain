@@ -15,16 +15,18 @@ last_verified: 2026-09-11
 
 ## 1. Active Blockers (Immediate Sprint Focus)
 
-### OQ-01: Exact Interview Blueprint Schema Specification
-- **Area:** JD & Interview Interface
-- **Why it matters:** Defines the contract between JD analysis output and the downstream real-time interview orchestrator.
+### OQ-01: Exact Interview Blueprint Schema Specification & Data Model
+- **Area:** JD & Interview Interface / Database Architecture
+- **Why it matters:** Defines the contract between JD analysis output, database persistence, and downstream real-time interview orchestrator.
 - **Blocking:** [[KAN-46]] and [[KAN-18]] implementation.
-- **Candidate Options:**
-  - Option A: Minimal blueprint (focus areas, duration, question count, difficulty level, key evaluation criteria).
-  - Option B: Full interview agenda (pre-generated question seeds, stage breakdown: intro, tech deep dive, behavioral/system design, wrap-up).
+- **Working Proposal (Local Working Decisions BR-01 to BR-13):**
+  - **Cardinalities:** JD (1) -> (N) Blueprints; Blueprint (1) -> (N) Sessions.
+  - **Separation of Concerns:** JD = Job requirements; Interview Config = Candidate session settings; Blueprint = Assessment plan (stages, duration, rubric, question budget); Runtime Questions = Adaptively generated at runtime during turns.
+  - **Relational Model:** Normalized `interview_blueprints` table (extracted from `job_descriptions.blueprint`); `interview_sessions` re-parented to `blueprint_id` with `ON DELETE RESTRICT`; redundant session columns removed; immutable `blueprint_snapshot JSONB NOT NULL` preserved on sessions.
+  - **Architecture Models:** Data Flow, Sequence, and Lifecycle state machines authored and validated via Archify showcase profile.
 - **Owner:** Backend Lead / Team Consensus
-- **Status:** `OPEN` (Target resolution: [[KAN-46]] committed deadline 2026-09-11 14:00)
-- **Resolution Link:** Pending [[JD-Blueprint]] / [[KAN-46]]
+- **Status:** `PROPOSED` (Local working contract formulated in [[KAN-46]], `Target-Database-ERD.drawio`, and Archify diagrams; awaiting backend team review & ratification)
+- **Resolution Link:** [[JD-Blueprint]] | [[KAN-46]] | [Target-Database-ERD.md](file:///home/dorriss/Documents/SEP490/03_Domains/JD/architecture/target-database/Target-Database-ERD.md)
 
 ---
 

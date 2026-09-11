@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Generate, Preview, Save and Execute Interview Blueprint",
+    "output": "03_Domains/JD/architecture/blueprint-sequence/generate-preview-save-execute-sequence.html",
+    "viewBox": [
+      1440,
+      1020
+    ],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "generation-and-validation",
+        "label": "Planning & validation",
+        "focus": [
+          "candidate",
+          "frontend",
+          "bp_service",
+          "llm_adapter",
+          "validator"
+        ],
+        "note": "Request blueprint generation, call LLM semantic planner, and enforce deterministic domain validation."
+      },
+      {
+        "id": "persistence-and-preview",
+        "label": "Persistence & preview",
+        "focus": [
+          "bp_service",
+          "bp_repo",
+          "frontend",
+          "candidate"
+        ],
+        "note": "Persist validated blueprint and present reusable preview to candidate."
+      },
+      {
+        "id": "runtime-execution",
+        "label": "Session execution & turns",
+        "focus": [
+          "candidate",
+          "frontend",
+          "session_service",
+          "bp_repo",
+          "runtime"
+        ],
+        "note": "Freeze blueprint snapshot, start session, and deliver adaptive runtime questions."
+      }
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "candidate",
+      "type": "external",
+      "label": "Candidate"
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "Frontend"
+    },
+    {
+      "id": "jd_domain",
+      "type": "backend",
+      "label": "JD Domain"
+    },
+    {
+      "id": "bp_service",
+      "type": "backend",
+      "label": "Blueprint Service"
+    },
+    {
+      "id": "llm_adapter",
+      "type": "cloud",
+      "label": "LLM Adapter"
+    },
+    {
+      "id": "validator",
+      "type": "security",
+      "label": "Domain Validator"
+    },
+    {
+      "id": "bp_repo",
+      "type": "database",
+      "label": "Blueprint Repo"
+    },
+    {
+      "id": "session_service",
+      "type": "backend",
+      "label": "Session Service"
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "Interview Runtime"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 290,
+      "label": "1. Configuration & JD Ingestion"
+    },
+    {
+      "from": 295,
+      "to": 455,
+      "label": "2. Planning & Domain Validation"
+    },
+    {
+      "from": 460,
+      "to": 595,
+      "label": "3. Persistence & Preview Choices"
+    },
+    {
+      "from": 600,
+      "to": 900,
+      "label": "4. Session Start & Adaptive Runtime"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "candidate",
+      "to": "frontend",
+      "y": 175,
+      "label": "configure difficulty, duration, question budget",
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "frontend",
+      "to": "bp_service",
+      "y": 210,
+      "label": "POST /blueprints/generate (config)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m3",
+      "from": "bp_service",
+      "to": "jd_domain",
+      "y": 245,
+      "label": "getReviewedJD(jd_id)",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "jd_domain",
+      "to": "bp_service",
+      "y": 275,
+      "label": "Reviewed JD requirements",
+      "variant": "return"
+    },
+    {
+      "id": "m5",
+      "from": "bp_service",
+      "to": "llm_adapter",
+      "y": 320,
+      "label": "planAssessment(ReviewedJD, Config, Policy)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m6",
+      "from": "llm_adapter",
+      "to": "bp_service",
+      "y": 360,
+      "label": "structured candidate plan",
+      "variant": "return"
+    },
+    {
+      "id": "m7",
+      "from": "bp_service",
+      "to": "validator",
+      "y": 400,
+      "label": "validateAndNormalize(candidatePlan)",
+      "variant": "security"
+    },
+    {
+      "id": "m8",
+      "from": "validator",
+      "to": "bp_service",
+      "y": 435,
+      "label": "validation pass (or reject without overwrite)",
+      "variant": "return"
+    },
+    {
+      "id": "m9",
+      "from": "bp_service",
+      "to": "bp_repo",
+      "y": 480,
+      "label": "saveBlueprint(validPlan)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m10",
+      "from": "bp_repo",
+      "to": "bp_service",
+      "y": 515,
+      "label": "saved blueprint (reusable)",
+      "variant": "return"
+    },
+    {
+      "id": "m11",
+      "from": "bp_service",
+      "to": "frontend",
+      "y": 550,
+      "label": "200 Blueprint Preview (WHAT to assess)",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "frontend",
+      "to": "candidate",
+      "y": 580,
+      "label": "preview plan (regenerate / save / start)",
+      "variant": "return"
+    },
+    {
+      "id": "m13",
+      "from": "candidate",
+      "to": "frontend",
+      "y": 625,
+      "label": "Start Interview",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m14",
+      "from": "frontend",
+      "to": "session_service",
+      "y": 660,
+      "label": "POST /sessions (blueprint_id)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m15",
+      "from": "session_service",
+      "to": "bp_repo",
+      "y": 695,
+      "label": "loadBlueprint(blueprint_id)",
+      "variant": "default"
+    },
+    {
+      "id": "m16_ret",
+      "from": "bp_repo",
+      "to": "session_service",
+      "y": 730,
+      "label": "return blueprint + copy immutable snapshot",
+      "variant": "return"
+    },
+    {
+      "id": "m17",
+      "from": "session_service",
+      "to": "runtime",
+      "y": 775,
+      "label": "startSession(session_id, snapshot)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m18",
+      "from": "runtime",
+      "to": "candidate",
+      "y": 815,
+      "label": "ask adaptive question 1 (HOW to ask)",
+      "variant": "default"
+    },
+    {
+      "id": "m19",
+      "from": "candidate",
+      "to": "runtime",
+      "y": 850,
+      "label": "candidate answer",
+      "variant": "default"
+    },
+    {
+      "id": "m20",
+      "from": "runtime",
+      "to": "candidate",
+      "y": 885,
+      "label": "evaluate context -> ask adaptive follow-up",
+      "variant": "emphasis"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "frontend",
+      "from": 205,
+      "to": 585,
+      "type": "frontend"
+    },
+    {
+      "participant": "bp_service",
+      "from": 210,
+      "to": 555,
+      "type": "backend"
+    },
+    {
+      "participant": "jd_domain",
+      "from": 240,
+      "to": 280,
+      "type": "backend"
+    },
+    {
+      "participant": "llm_adapter",
+      "from": 315,
+      "to": 365,
+      "type": "cloud"
+    },
+    {
+      "participant": "validator",
+      "from": 395,
+      "to": 440,
+      "type": "security"
+    },
+    {
+      "participant": "bp_repo",
+      "from": 475,
+      "to": 520,
+      "type": "database"
+    },
+    {
+      "participant": "frontend",
+      "from": 620,
+      "to": 665,
+      "type": "frontend"
+    },
+    {
+      "participant": "session_service",
+      "from": 655,
+      "to": 780,
+      "type": "backend"
+    },
+    {
+      "participant": "bp_repo",
+      "from": 690,
+      "to": 730,
+      "type": "database"
+    },
+    {
+      "participant": "runtime",
+      "from": 770,
+      "to": 890,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Decoupled Generation & Validation",
+      "items": [
+        "LLM acts as semantic planner proposing candidate assessment objectives",
+        "Deterministic validator enforces schema, budgets, and policy constraints",
+        "Validation failure rejects candidate plan without destroying previously saved blueprint"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Reusable Blueprint Choices",
+      "items": [
+        "Candidate can adjust configuration and regenerate the blueprint",
+        "Candidate can save and leave; the Blueprint remains reusable across practice sessions",
+        "Starting an interview does not consume or destroy the reusable blueprint"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Immutable Snapshot vs. Adaptive Turns",
+      "items": [
+        "Session creation freezes immutable blueprint_snapshot for tamper-proof evaluation",
+        "Blueprint specifies WHAT to assess; it does NOT pre-generate fixed question wording",
+        "Runtime orchestrator formulates dynamic questions and context-sensitive follow-ups"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Interview Blueprint Lifecycle",
+    "output": "03_Domains/JD/architecture/blueprint-lifecycle/interview-blueprint-lifecycle.html",
+    "viewBox": [
+      960,
+      680
+    ],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "blueprint-lifecycle",
+        "label": "Blueprint lifecycle",
+        "focus": [
+          "generating",
+          "ready",
+          "failed"
+        ],
+        "note": "Domain lifecycle: GENERATING transitions to READY on validation pass, or to FAILED on error. READY is reusable and supports regeneration."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Active Lifecycle"
+    },
+    {
+      "id": "exceptions",
+      "label": "Recovery"
+    }
+  ],
+  "states": [
+    {
+      "id": "generating",
+      "type": "active",
+      "label": "GENERATING",
+      "sublabel": "planning & validation",
+      "lane": "main",
+      "col": 0,
+      "tag": "transient"
+    },
+    {
+      "id": "ready",
+      "type": "success",
+      "label": "READY",
+      "sublabel": "reusable assessment plan",
+      "lane": "main",
+      "col": 2,
+      "tag": "reusable"
+    },
+    {
+      "id": "failed",
+      "type": "failure",
+      "label": "FAILED",
+      "sublabel": "validation error",
+      "lane": "exceptions",
+      "col": 0,
+      "yOffset": 60,
+      "tag": "retryable"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "gen-to-ready",
+      "from": "generating",
+      "to": "ready",
+      "label": "validation passes",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left",
+      "route": "straight",
+      "labelAt": [
+        248,
+        122
+      ]
+    },
+    {
+      "id": "gen-to-failed",
+      "from": "generating",
+      "to": "failed",
+      "label": "validation error",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [
+        248,
+        248
+      ],
+      "via": [
+        [
+          94,
+          260
+        ],
+        [
+          402,
+          260
+        ]
+      ]
+    },
+    {
+      "id": "failed-retry",
+      "from": "failed",
+      "to": "generating",
+      "label": "retry request",
+      "variant": "default",
+      "fromSide": "left",
+      "toSide": "left",
+      "via": [
+        [
+          15,
+          367
+        ],
+        [
+          15,
+          157
+        ]
+      ],
+      "labelAt": [
+        15,
+        250
+      ]
+    },
+    {
+      "id": "ready-regen",
+      "from": "ready",
+      "to": "generating",
+      "label": "reconfigure & regenerate",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "top",
+      "via": [
+        [
+          402,
+          70
+        ],
+        [
+          94,
+          70
+        ]
+      ],
+      "labelAt": [
+        248,
+        58
+      ]
+    },
+    {
+      "id": "ready-preview",
+      "from": "ready",
+      "to": "ready",
+      "label": "Preview / Start Session",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [
+        [
+          500,
+          157
+        ],
+        [
+          500,
+          230
+        ],
+        [
+          402,
+          230
+        ]
+      ],
+      "labelAt": [
+        530,
+        195
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Reusable Assessment Plan",
+      "items": [
+        "A READY Blueprint is reusable across multiple independent interview sessions",
+        "Starting an interview does not consume, alter, or destroy the READY blueprint",
+        "One Blueprint produces multiple practice session attempts (Session A, B, C)"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Deterministic Gate & Transitions",
+      "items": [
+        "GENERATING transitions to READY only when LLM output passes deterministic schema validation",
+        "GENERATING transitions to FAILED when generation fails or schema validation rejects the plan",
+        "FAILED can be retried without leaving corrupt artifacts"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Regeneration & Snapshot Invariants",
+      "items": [
+        "If regeneration fails, the previously valid READY blueprint remains available",
+        "Never overwrite an existing valid plan until new generation passes validation",
+        "Session creation freezes immutable blueprint_snapshot independently of lifecycle state"
+      ]
+    }
+  ]
+}

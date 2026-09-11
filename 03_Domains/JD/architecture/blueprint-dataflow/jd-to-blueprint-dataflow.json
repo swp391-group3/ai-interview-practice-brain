@@ -1,0 +1,332 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "JD to Interview Blueprint Data Flow",
+    "output": "03_Domains/JD/architecture/blueprint-dataflow/jd-to-blueprint-dataflow.html",
+    "viewBox": [
+      1080,
+      720
+    ],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "ingestion-path",
+        "label": "Ingestion & review",
+        "focus": [
+          "raw_jd",
+          "pdf_extract",
+          "structured_extract",
+          "candidate_review"
+        ],
+        "note": "Follow raw job description inputs to candidate-reviewed requirements."
+      },
+      {
+        "id": "generation-gate",
+        "label": "Blueprint generation gate",
+        "focus": [
+          "candidate_review",
+          "interview_config",
+          "interview_policy",
+          "semantic_planner",
+          "validator",
+          "saved_blueprint"
+        ],
+        "note": "Combine Reviewed JD, config, and policy through LLM planning and domain validation."
+      },
+      {
+        "id": "runtime-execution",
+        "label": "Immutable runtime execution",
+        "focus": [
+          "saved_blueprint",
+          "session_snapshot",
+          "adaptive_runtime"
+        ],
+        "note": "Snapshot the validated blueprint for tamper-proof adaptive questioning."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "label": "JD Ingestion"
+    },
+    {
+      "label": "Extraction"
+    },
+    {
+      "label": "Reviewed Inputs"
+    },
+    {
+      "label": "Blueprint Generation"
+    },
+    {
+      "label": "Contract & Runtime"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "raw_jd",
+      "type": "frontend",
+      "label": "Raw JD Text",
+      "sublabel": "pasted text",
+      "stage": 0,
+      "row": 0,
+      "width": 120,
+      "tag": "text input"
+    },
+    {
+      "id": "pdf_extract",
+      "type": "backend",
+      "label": "PDF Extraction",
+      "sublabel": "UTF-8 parser",
+      "stage": 0,
+      "row": 2,
+      "width": 120,
+      "tag": "pdf byte parser"
+    },
+    {
+      "id": "structured_extract",
+      "type": "backend",
+      "label": "Structured JD",
+      "sublabel": "skills & reqs",
+      "stage": 1,
+      "row": 1,
+      "width": 120,
+      "tag": "parsed model"
+    },
+    {
+      "id": "interview_config",
+      "type": "frontend",
+      "label": "Interview Config",
+      "sublabel": "candidate prefs",
+      "stage": 2,
+      "row": 0,
+      "width": 120,
+      "tag": "user settings"
+    },
+    {
+      "id": "candidate_review",
+      "type": "frontend",
+      "label": "Candidate Review",
+      "sublabel": "Reviewed JD",
+      "stage": 2,
+      "row": 1,
+      "width": 120,
+      "tag": "human gate"
+    },
+    {
+      "id": "interview_policy",
+      "type": "security",
+      "label": "Interview Policy",
+      "sublabel": "system policy",
+      "stage": 2,
+      "row": 2,
+      "width": 120,
+      "tag": "system rules"
+    },
+    {
+      "id": "semantic_planner",
+      "type": "cloud",
+      "label": "Semantic Planner",
+      "sublabel": "assessment plan",
+      "stage": 3,
+      "row": 1,
+      "width": 120,
+      "tag": "untrusted output"
+    },
+    {
+      "id": "validator",
+      "type": "security",
+      "label": "Domain Validator",
+      "sublabel": "contract gate",
+      "stage": 3,
+      "row": 3,
+      "width": 120,
+      "tag": "schema gate"
+    },
+    {
+      "id": "saved_blueprint",
+      "type": "database",
+      "label": "Saved Blueprint",
+      "sublabel": "reusable assessment plan",
+      "stage": 4,
+      "row": 1,
+      "width": 120,
+      "tag": "WHAT to assess"
+    },
+    {
+      "id": "session_snapshot",
+      "type": "database",
+      "label": "Session Snapshot",
+      "sublabel": "immutable blueprint copy",
+      "stage": 4,
+      "row": 2,
+      "width": 120,
+      "tag": "frozen rubric"
+    },
+    {
+      "id": "adaptive_runtime",
+      "type": "backend",
+      "label": "Adaptive Runtime",
+      "sublabel": "orchestrator",
+      "stage": 4,
+      "row": 3,
+      "width": 120,
+      "tag": "HOW to ask"
+    }
+  ],
+  "flows": [
+    {
+      "id": "raw-to-extract",
+      "from": "raw_jd",
+      "to": "structured_extract",
+      "label": "raw text",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "pdf-to-extract",
+      "from": "pdf_extract",
+      "to": "structured_extract",
+      "label": "clean text",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "extract-to-review",
+      "from": "structured_extract",
+      "to": "candidate_review",
+      "label": "parsed skills",
+      "variant": "emphasis",
+      "route": "straight",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "config-to-planner",
+      "from": "interview_config",
+      "to": "semantic_planner",
+      "label": "settings",
+      "variant": "default",
+      "fromSide": "right",
+      "toSide": "left",
+      "channelX": 604,
+      "labelAt": [
+        604,
+        195
+      ],
+      "route": "vertical-channel"
+    },
+    {
+      "id": "review-to-planner",
+      "from": "candidate_review",
+      "to": "semantic_planner",
+      "label": "Reviewed JD",
+      "variant": "emphasis",
+      "route": "straight",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [
+        646,
+        260
+      ]
+    },
+    {
+      "id": "policy-to-planner",
+      "from": "interview_policy",
+      "to": "semantic_planner",
+      "label": "policy",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "left",
+      "channelX": 665,
+      "labelAt": [
+        665,
+        335
+      ],
+      "route": "vertical-channel"
+    },
+    {
+      "id": "planner-to-validator",
+      "from": "semantic_planner",
+      "to": "validator",
+      "label": "candidate plan",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight",
+      "labelAt": [
+        745,
+        385
+      ]
+    },
+    {
+      "id": "validator-to-saved",
+      "from": "validator",
+      "to": "saved_blueprint",
+      "label": "validated plan",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "saved-to-snapshot",
+      "from": "saved_blueprint",
+      "to": "session_snapshot",
+      "label": "copy on start",
+      "variant": "default",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight",
+      "labelAt": [
+        960,
+        330
+      ]
+    },
+    {
+      "id": "snapshot-to-runtime",
+      "from": "session_snapshot",
+      "to": "adaptive_runtime",
+      "label": "frozen rubric",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight",
+      "labelAt": [
+        960,
+        445
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Reviewed JD & Configuration",
+      "items": [
+        "PDF text extraction is decoupled from LLM parsing to keep file parsing testable and modular",
+        "Candidate review provides human-in-the-loop authority over extracted skills before planning",
+        "Interview configuration supplies difficulty, duration, and question budget independent of JD seniority"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Semantic Planning & Contract Gate",
+      "items": [
+        "LLM acts as a semantic planner, proposing an assessment agenda rather than fixed question wording",
+        "Deterministic validator normalizes stages, question budgets, and scoring rubrics before storage",
+        "Untrusted LLM proposals are rejected if invalid; existing valid blueprints are never destroyed"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "Immutable Contract vs. Runtime",
+      "items": [
+        "Interview Blueprint defines WHAT to assess (competencies, allocated minutes, question budgets)",
+        "Adaptive Interview Runtime defines HOW to ask (generating contextual questions during turns)",
+        "Session blueprint snapshot freezes the assessment plan for tamper-proof evaluation reproducibility"
+      ]
+    }
+  ]
+}
