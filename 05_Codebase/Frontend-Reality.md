@@ -3,7 +3,7 @@ project: SEP490
 type: code-reality
 status: current
 authority: code
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Frontend Implementation Reality
@@ -41,7 +41,7 @@ last_verified: 2026-09-11
 
 | Feature Folder | Current Implementation Reality | Status |
 | :--- | :--- | :--- |
-| `features/job-description/` | Contains only `job-description-entry.tsx` displaying `RoutePlaceholder`. No forms or API mutations yet. | `PLACEHOLDER` (Subject to [[KAN-20]]) |
+| `features/job-description/` | Contains only `components/job-description-entry.tsx` displaying `RoutePlaceholder`. No forms or API mutations yet. | `PLACEHOLDER` (Subject to [[KAN-20]]) |
 | `features/interview/` | Prototype folders for `avatar`, `audio`, `machine`, `transport`. | `SKELETON / SPIKE` |
 | `features/auth/` | Session adapter skeleton (`session-adapter.ts`). | `IN PROGRESS` |
 | `features/admin/` | Placeholder components. | `SKELETON` |

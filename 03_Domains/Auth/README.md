@@ -3,25 +3,13 @@ project: SEP490
 type: domain
 status: current
 authority: code
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Authentication & Identity Domain
 
-## 1. Status & Implementation Reality
-- **Backend Package:** `api/internal/auth/` (fully implemented)
-- **Database Table:** `accounts` (`api/migration/000001_init.up.sql`)
-- **Key Modules:**
-  - `repository/`: sqlc-generated account queries (`GetAccountByEmail`, `CreateAccount`).
-  - `service/`: Password hashing (bcrypt) and token generation.
-  - `transport/http/`: Gin HTTP handler for login (`api/internal/auth/transport/http/login.go`).
-  - `pkg/token/`: Stateless JWT generation (access & refresh tokens).
+**MERGED IMPLEMENTATION:** `api/internal/features/auth` provides account lookup, bcrypt password verification, and JWT pair generation. `POST /auth/login` is correctly mounted once; it returns the access token through the response envelope and writes the refresh JWT cookie (`refresh`, path `/auth/refresh`). Access and refresh secrets are separate configuration values.
 
-## 2. Invariants & Security
-- Passwords are encrypted with bcrypt.
-- JWT tokens carry subject UUID, role, and token type (`access` vs `refresh`).
-- Token validation middleware protects candidate and admin routes.
+`middleware.RequireAuth` accepts Bearer access tokens and places the authenticated UUID in Gin context; internal consumers use `middleware.CurrentUserID`.
 
-## 3. Discrepancies & Debt
-- Route path bug: `api/internal/auth/transport/http/server.go` registers `/auth/auth/login`.
-- Role ENUM in database has `participant`, `jury`, `admin`. Needs alignment with product specifications.
+The persisted role enum remains `participant`, `jury`, `admin`; its divergence from product terminology is deliberately retained as [[Open-Questions#OQ-09]].

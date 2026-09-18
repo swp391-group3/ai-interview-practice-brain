@@ -3,10 +3,32 @@ project: SEP490
 type: control
 status: current
 authority: local-brain
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Vault Synchronization Log
+
+## 2026-09-18 — Full contract synchronization
+
+**Sources inspected:** brain `main`; source-repository `main` at `bfdc9cc4`; local branches `chore/backend-foundation` and `feature/jd-api`; source files and branch diffs.
+
+### Merged implementation recorded
+
+- PR #7 database schema; PR #8 backend quality foundation; PR #9 KAN-18 structured JD extraction; PR #10 duplicate routing fix; PR #11 access-token middleware; PR #12 refresh-token cookie; and PR #13 backend architecture refactor.
+- Corrected merged auth route to `/auth/login`, documented access-token response, refresh cookie, separate secrets, and Bearer UUID context.
+- Replaced legacy backend paths with the merged feature-oriented package tree; recorded Viper, Zap, OpenTelemetry, Wire, configurable port default 3000, Eino/Gemini extraction, and uppercase error codes.
+
+### Open PR / working implementation recorded separately
+
+- PR #14 `chore/backend-foundation`: config/lifecycle, Air, CORS/logging, Swagger, Testcontainers, Makefile, and review tooling.
+- PR #15 `feature/jd-api`: reviewed JD persistence, `/jds` API, Swagger, sqlc JD entry, error mappings, and `interview_blueprints` migration. Branch is open, so none is represented as merged.
+
+### Jira and contract changes
+
+- Updated KAN-18, KAN-19, KAN-46 to `DONE`; KAN-20, KAN-44, KAN-45 to `IN PROGRESS`; added current non-JD workload context.
+- Recorded the explicit KAN-19 discrepancy: Jira `DONE` while PR #15 remains open.
+- Rewrote API, Backend, and JD contracts; refreshed Auth/JD domains, codebase reality, execution snapshots, decision registry, and open questions.
+- Preserved blueprint diagrams/business rules as proposed/reference while identifying the remaining session/ERD implementation gap.
 
 > [!NOTE]
 > This log records operational and architectural deltas between the local project brain, team decisions, repository changes, and external AI tools (ChatGPT/Claude). Log entries record **deltas only**, not redundant copies.
@@ -96,5 +118,4 @@ last_verified: 2026-09-11
 ### Status & Authority
 - All artifacts strictly marked **LOCAL WORKING CONTRACT / PROPOSED TEAM CONTRACT** pending backend team review and ratification.
 - Production source code untouched; Jira untouched; KAN-46 retained as `IN PROGRESS`.
-
 

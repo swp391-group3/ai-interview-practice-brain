@@ -3,45 +3,48 @@ project: SEP490
 type: contract
 status: accepted
 authority: code
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Backend Engineering Contract
 
-## 1. Status & Metadata
-- **Status:** `ACCEPTED` (Enforced by current code in `api/`)
-- **Root Directory:** `api/`
-- **Runtime:** Go 1.27
-- **Web Framework:** Gin v1.12.0
-- **Database Engine:** PostgreSQL 16+ via `pgx/v5` connection pool
+## ACCEPTED CONTRACT — merged architecture
 
-## 2. Package Architecture
-All backend application logic resides under `api/`:
-```
+The backend root is `api/`, using Go 1.27, Gin, PostgreSQL with `pgx/v5`, sqlc, numbered SQL migrations, centralized application errors, and the `response.Envelope` boundary. Configuration is Viper-based; logging is Zap-based and tracing uses OpenTelemetry. Google Wire supplies compile-time dependency injection.
+
+```text
 api/
-├── cmd/http/main.go               # Server initialization and graceful shutdown
-├── internal/
-│   ├── auth/                      # Authentication domain (repository, service, transport)
-│   ├── jd/                        # Job description domain (planned KAN-18, KAN-19)
-│   └── shared/                    # Shared configuration and HTTP router assembly
-├── migration/                     # Schema migrations (000001_init.up.sql)
-└── pkg/
-    ├── apperror/                  # Standard error codes & wrapping
-    ├── response/                  # Unified JSON HTTP envelope
-    ├── token/                     # JWT signing and claim validation
-    └── util/                      # Database pool lifecycle
+├── cmd/api/                         # application entrypoint and Wire output
+├── internal/config/                 # Viper config
+├── internal/database/               # pgx pool
+├── internal/features/auth/          # feature repository + service
+├── internal/features/jd/            # merged extraction feature
+├── internal/handler/                # Gin handlers
+├── internal/middleware/             # auth, CORS, logging, recovery
+├── internal/provider/               # Wire providers
+├── internal/router/                 # route assembly
+├── internal/server/                 # HTTP lifecycle
+├── internal/pkg/{ai,logger,tracer}/ # internal infrastructure adapters
+├── migration/                       # numbered up/down migrations
+└── pkg/{apperror,response,token}/   # shared public packages
 ```
 
-## 3. Architectural Invariants
-- **No Clean Architecture Boilerplate:** Do not create separate `usecase/`, `domain/`, `interfaces/` layers per service unless approved. Co-locate feature logic in `internal/<domain>/`.
-- **No ORM Reflection:** Database queries MUST use `sqlc` compiled Go methods over raw `pgx/v5`. GORM is prohibited.
-- **Strict SQL Migrations:** All schema changes must be versioned sequential files (`NNNNNN_name.up.sql` and `NNNNNN_name.down.sql`).
-- **Response Envelope Uniformity:** All HTTP endpoints must return payloads via `pkg/response` (`response.OK`, `response.Created`, `response.Error`).
-- **Domain Errors:** Errors passed to HTTP layer must be wrapped as `*apperror.AppError` with a defined `apperror.Code`.
+Do not revive the legacy `cmd/http`, `internal/auth`, `internal/shared`, `pkg/util`, or planned `internal/jd` model.
 
-## 4. Open Questions
-- OQ-04: Multi-package `sqlc.yaml` generation pattern for `internal/jd/repository` (see [[Open-Questions]]).
+## Engineering invariants
 
-## 5. Traceability
-- **Relevant ADRs:** [[ADR-001-backend-directory-and-package-structure]], [[ADR-002-database-access-sqlc-pgx]], [[ADR-003-error-handling-and-response-envelope]]
-- **Relevant Code:** `api/cmd/http/main.go`, `api/sqlc.yaml`, `api/pkg/apperror/apperr.go`, `api/pkg/response/response.go`
+- Use sqlc-generated pgx/v5 access; no GORM assumption.
+- Version schema changes as numbered `.up.sql` / `.down.sql` migrations.
+- Return handled JSON through `response.OK`, `response.Created`, or `response.Error` except intentional no-content responses.
+- Surface known failures as `*apperror.AppError` with a stable uppercase code.
+- Feature code is organized beneath `internal/features/<feature>`; router/handler/provider infrastructure remains outside feature packages.
+
+## OPEN PR / WORKING IMPLEMENTATION
+
+PR #14 (`chore/backend-foundation`) adds/changes Air, lifecycle/config stabilization, CORS/request logging, Swagger, PostgreSQL Testcontainers, Makefile targets, and review tooling. PR #15 also carries Swagger and tests. These are not merged guarantees until their branch merges.
+
+PR #15 has a two-entry `api/sqlc.yaml` for `internal/features/auth/repository` and `internal/features/jd/repository`; this resolves the working layout but remains pending merge.
+
+## Verification pointers
+
+`api/go.mod`, `api/cmd/api/`, `api/internal/{config,database,handler,middleware,provider,router,server}/`, `api/pkg/{apperror,response}/`, and `api/sqlc.yaml`.

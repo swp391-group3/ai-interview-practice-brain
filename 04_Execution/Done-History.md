@@ -3,14 +3,20 @@ project: SEP490
 type: execution
 status: current
 authority: code
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Completed Milestone History
 
-| Milestone / PR | Scope | Completion Date | Evidence |
-| :--- | :--- | :--- | :--- |
-| **PR #1 (Initial Backend)** | Backend skeleton moved to `api/`, PostgreSQL migration, auth repository, JWT token generation, shared response envelope | 2026-09-08 | Commit `a66d20d`, `api/` |
-| **PR #3 (Frontend Design)** | Next.js 16 app skeleton, RoleCue design contract, OpenDesign study, SVG brand assets | 2026-09-08 | Commit `3e07283`, `frontend/design/` |
-| **PR #4 (Module Fix)** | Corrected Go module repository path in `api/go.mod` | 2026-09-09 | Commit `faebb25` |
-| **Local Docker Setup** | Added local PostgreSQL Docker Compose file and `.env.example` | 2026-09-11 | Commit `0f22ea5` |
+| Milestone | Status / evidence |
+|---|---|
+| PR #7 database schema | Merged historical baseline |
+| PR #8 backend quality foundation | Merged historical work; newer foundation changes are PR #14 open |
+| PR #9 KAN-18 extraction | Merged |
+| PR #10 duplicate routing fix | Merged |
+| PR #11 access-token middleware | Merged |
+| PR #12 refresh-token cookie | Merged |
+| PR #13 backend refactor | Merged as `bfdc9cc4` |
+| KAN-46 blueprint contract | Jira `DONE`; implementation remains partial/open-PR evidence |
+
+PR #14 and PR #15 are deliberately excluded from merged history because both are open.

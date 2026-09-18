@@ -3,7 +3,7 @@ project: SEP490
 type: decision
 status: current
 authority: team
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Architecture & Engineering Decision Registry
@@ -30,6 +30,15 @@ last_verified: 2026-09-11
 
 ## 2. Master Decision Log
 
+> **2026-09-18 authority correction:** merged `main` and an open PR are distinct implementation states. The entries below retain historical records; stale path references are superseded by [[Backend-Contract]].
+
+| Area | Decision Summary | State | Evidence / Authority | Date | Supersedes | Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Backend Core** | Feature-oriented backend structure under `api/internal/features/*` with router/handler/provider infrastructure | `ACCEPTED` | Merged PR #13 / `main` | 2026-09-18 | Legacy `internal/auth`, `internal/shared`, `cmd/http` references | Current merged package structure. |
+| **JD Extraction** | Technical-only structured extraction with deterministic validation; Gemini through Eino is current adapter | `ACCEPTED` | Merged PR #9 / `main` | 2026-09-18 | Draft schema with soft skills/years | Provider/model policy still configurable. |
+| **Database** | Feature-local auth + JD sqlc entries | `RESOLVED IN OPEN PR / PENDING MERGE` | PR #15 `api/sqlc.yaml` | 2026-09-18 | OQ-04 open framing | Not merged acceptance. |
+| **Blueprint DB** | Dedicated `interview_blueprints` table with JD FK `ON DELETE RESTRICT` | `OPEN PR / WORKING IMPLEMENTATION` | PR #15 migration 000002 | 2026-09-18 | Embedded `job_descriptions.blueprint` proposal | Does not establish session re-parenting/full target ERD. |
+
 | Area | Decision Summary | State | Evidence / Authority | Date | Supersedes | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Backend Core** | Backend code root placed at `api/` (not `backend/`) | `ACCEPTED` | Merged PR #1 (`faebb25`) | 2026-09-08 | Legacy specs referencing `backend/` | Single repo root convention for Go server. |
@@ -38,7 +47,7 @@ last_verified: 2026-09-11
 | **Database** | Database schema migrations use `golang-migrate` standard SQL scripts (`.up.sql`, `.down.sql`) | `ACCEPTED` | `api/migration/000001_init.up.sql` | 2026-09-08 | Legacy Goose migration spec | Numbered versioned SQL scripts. |
 | **Backend API** | Shared structured application errors via `pkg/apperror` with domain error codes | `ACCEPTED` | `api/pkg/apperror/apperr.go` | 2026-09-08 | Ad-hoc Go errors | Centralized error code mapping to HTTP status codes. |
 | **Backend API** | Standardized JSON HTTP response envelope `{ success, data, error }` via `pkg/response` | `ACCEPTED` | `api/pkg/response/response.go` | 2026-09-08 | Plain Gin JSON responses | Consistent response envelope across all endpoints. |
-| **Auth** | Stateless JWT authentication with access/refresh tokens in `pkg/token` | `ACCEPTED` | `api/pkg/token/token.go`, `api/internal/auth/service/login.go` | 2026-09-08 | - | Signed JWT with HMAC-SHA256, custom claims (`id`, `role`, `type`). |
+| **Auth** | Stateless JWT authentication with access/refresh tokens in `pkg/token` | `SUPERSEDED` | Historical pre-PR #13 path record | 2026-09-08 | - | Replaced by 2026-09-18 merged auth entry above; old path no longer current. |
 | **Frontend Core** | Next.js 16 (App Router), React 19, TypeScript, Bun package manager | `ACCEPTED` | `frontend/package.json`, `bun.lock` | 2026-09-08 | - | Standardized modern React stack with Bun runtime. |
 | **Frontend UI** | Tailwind CSS v4, shadcn/ui components, Lucide React icons | `ACCEPTED` | `frontend/package.json`, `components.json` | 2026-09-08 | - | Unified accessible design system. |
 | **Frontend State** | TanStack Query v5 for server state, Zustand v5 for client state, React Hook Form + Zod for forms | `ACCEPTED` | `frontend/package.json`, `frontend/src/providers/` | 2026-09-08 | - | Type-safe form validation and predictable caching. |

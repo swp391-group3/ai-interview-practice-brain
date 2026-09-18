@@ -3,7 +3,7 @@ project: SEP490
 type: contract
 status: accepted
 authority: code
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Frontend Engineering Contract

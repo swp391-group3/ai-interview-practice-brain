@@ -34,7 +34,7 @@ graph TD
 | :--- | :--- | :--- | :--- |
 | **A** | **ACCEPTED / NORMATIVE** | Team-approved architectural decision records (ADRs), ratified interface contracts, explicitly confirmed team agreements. | `api/` root structure, `sqlc` + `pgx/v5`, `pkg/apperror`, `pkg/response`. |
 | **B** | **DESIRED STATE** | Explicit Jira ticket acceptance criteria, confirmed team commitments, approved sprint goals. | [[KAN-46]] blueprint contract target, [[KAN-18]] extraction scope. |
-| **C** | **IMPLEMENTATION REALITY** | What reviewed, merged code actually executes in the repository today. | Go 1.27, Gin routes (`/auth/auth/login`), Next.js 16 App Router, custom fetch transport. |
+| **C** | **IMPLEMENTATION REALITY** | What reviewed code executes; distinguish merged `main` from open reviewed branches. | Merged: Go 1.27, Gin `/auth/login`, Next.js 16 and custom fetch transport. Open PR: JD REST/persistence. |
 | **D** | **MEETING / WORKING DECISION** | Discussed or tentatively agreed in meetings/Discord, but not yet formalized in an ADR. | Tentative pipeline separation for PDF parsing vs. LLM. |
 | **E** | **REQUIREMENT / REFERENCE** | Capstone registration documents, university syllabus, lecturer constraints, formal academic submissions. | 3D avatar presence, voice interaction, 20 concurrent users, Report 7 docx submission rules. |
 | **F** | **LEGACY / SPECULATIVE** | Historical specifications, superseded plans, unvalidated AI architectural proposals. | `SPECIFICATION.md` v1.1.0, `IMPLEMENTATION_PLAN.md` v2.1.0. |
@@ -62,7 +62,8 @@ If a conflict is detected between two tiers (e.g., Jira states behavior $X$ whil
 1. **Do NOT silently rewrite one to match the other.**
 2. **Record BOTH states explicitly** in the appropriate domain or codebase note:
    - **Desired State:** $X$ (Source: Jira [[KAN-18]])
-   - **Implementation Reality:** $Y$ (Source: `api/internal/auth/transport/http/server.go`)
+   - **Merged Implementation Reality:** $Y$ (source path/commit recorded)
+   - **Open PR / Working Implementation:** $Z$ (branch/PR recorded; not merged)
    - **Identified Gap:** $X \neq Y$
 3. Log the discrepancy in [[Open-Questions]] or [[Technical-Debt-and-Gaps]].
 4. Escalate to the team for an explicit decision before normalizing.

@@ -1,67 +1,23 @@
 ---
 project: SEP490
 type: domain
-status: draft
-authority: team
-last_verified: 2026-09-11
+status: current
+authority: code
+last_verified: 2026-09-18
 ---
 
 # JD Structured LLM Extraction
 
-> **Tracking:** [[KAN-18]]  
-> **Committed Deadline:** 2026-09-11 23:59  
-> **Status:** `PENDING KAN-46`
+**Tracking:** [[KAN-18]] — `DONE` in Jira and **MERGED IMPLEMENTATION**.
 
----
+`NormalizeInput` requires valid UTF-8, collapses whitespace per line, normalizes newline form, and accepts 100–20,000 Unicode code points. The Eino extractor sends the normalized JD as untrusted data to the configured Gemini-backed chat model. Its decoded response remains untrusted until `ValidateCandidate` completes.
 
-## 1. Objective
-Transform raw UTF-8 job description text into a normalized, structured JSON schema containing technical skills, experience requirements, tools, and domain classifications.
-
----
-
-## 2. Architecture & Pipeline
-```
-[Raw Clean JD Text] 
-         │
-         ▼
-[System Prompt + Pydantic/Zod/Go JSON Schema]
-         │
-         ▼
-[LLM Structured Output (JSON Mode)]
-         │
-         ▼
-[Go Domain Validator: validate skills, normalize categories]
-         │
-         ▼
-[Domain Entity: StructuredJD]
+```json
+{"title":"Backend Engineer","seniorityLevel":null,"skills":[{"name":"Go","category":"programming_language"}],"technologies":[],"domainKnowledge":["Payments"]}
 ```
 
----
+Title and all three arrays are structurally required; at least one nonblank competency is required. Seniority is optional when evidence is insufficient and may be `intern`, `junior`, `mid`, `senior`, or `lead`. Categories: `programming_language`, `framework`, `database`, `tool`, `technology`, `other`. Requirement can be `required`, `preferred`, or absent. The extraction prompt explicitly excludes interpersonal/soft skills.
 
-## 3. Extracted Entity Model (Draft)
+Duplicate names are normalized case-insensitively; duplicate skills with conflicting category/requirement fail rather than silently choosing one. Validation uses `INVALID_JD_INPUT`, `JD_TOO_SHORT`, `JD_TOO_LONG`, and `INVALID_EXTRACTION_OUTPUT`; provider failures use `EXTRACTION_FAILED` where raised by the service.
 
-```go
-type ExtractedSkill struct {
-    Name        string `json:"name"`
-    Category    string `json:"category"` // "language", "framework", "database", "cloud_infra", "tool", "concept"
-    Importance  string `json:"importance"` // "required", "preferred"
-    Proficiency string `json:"proficiency"` // "basic", "intermediate", "advanced"
-}
-
-type ExtractedJD struct {
-    JobTitle          string           `json:"jobTitle"`
-    Seniority         string           `json:"seniority"`
-    YearsOfExperience *int             `json:"yearsOfExperience"`
-    Domain            string           `json:"domain"`
-    Skills            []ExtractedSkill `json:"skills"`
-    Responsibilities  []string         `json:"responsibilities"`
-    RawSummary        string           `json:"rawSummary"`
-}
-```
-
----
-
-## 4. Invariants & Error Handling
-- **Hallucination Suppression:** Prompts must instruct the LLM to extract only explicitly stated or strongly implied technical skills, not invent entire stacks.
-- **Failover:** If JSON decoding fails or required fields are missing, return `apperror.CodeValidation` with a descriptive message.
-- **Open Decisions:** Provider selection (OpenAI vs. Gemini vs. Claude) remains `OPEN` (see [[Open-Questions]] OQ-05).
+Gemini/Eino is current implementation, while long-term provider/model policy is still [[Open-Questions#OQ-05]]. Stale fields such as `jobTitle`, `yearsOfExperience`, `domain`, `responsibilities`, `rawSummary`, `softSkills`, and `proficiency` are superseded.
