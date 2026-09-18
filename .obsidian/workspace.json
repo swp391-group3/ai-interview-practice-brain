@@ -11,10 +11,14 @@
             "id": "bd5186068869bdc6",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "05_Codebase/Integration-Boundaries.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Integration-Boundaries"
             }
           }
         ]
@@ -184,8 +188,16 @@
       "bases:Create new base": false
     }
   },
-  "active": "bd5186068869bdc6",
+  "active": "6330b43904cb48ab",
   "lastOpenFiles": [
+    "08_Reports/Sample/Report1_Sample.pdf",
+    "08_Reports/Sample/Report7_Final Project Report.pdf",
+    "08_Reports/Templates/Report1_Project_Introduction_v0.1.docx",
+    "08_Reports/Sample",
+    "05_Codebase/Technical-Debt-and-Gaps.md",
+    "05_Codebase/Repo-Map.md",
+    "05_Codebase/Backend-Reality.md",
+    "05_Codebase/Frontend-Reality.md",
     "99_Inbox/README.md",
     "90_Legacy-Reference/Other/README.md",
     "90_Legacy-Reference/Old-Design/README.md",
@@ -202,16 +214,11 @@
     "04_Execution/Done-History.md",
     "04_Execution/Dependency-Map.md",
     "04_Execution/Current-Sprint.md",
-    "05_Codebase/Technical-Debt-and-Gaps.md",
     "05_Codebase/Integration-Boundaries.md",
-    "05_Codebase/Frontend-Reality.md",
-    "05_Codebase/Backend-Reality.md",
-    "05_Codebase/Repo-Map.md",
     "03_Domains/Admin/README.md",
     "03_Domains/Payment/README.md",
     "03_Domains/Evaluation-Reporting/README.md",
     "03_Domains/Avatar-Audio/README.md",
-    "03_Domains/Interview/README.md",
     "00_Control_Center/test.txt",
     "90_Legacy-Reference/Old-Design/design-phase-workflow.workflow.json",
     "90_Legacy-Reference/Old-Design/design-phase-workflow.visual-check.json",
@@ -224,9 +231,6 @@
     "08_Reports/Lecturer/9_GFA26SE84_AI_Virtual_Technical_Interview_Capstone_Register.pdf",
     "08_Reports/Lecturer/Lecturer-note.jpg",
     "08_Reports/Templates/SEP490 StudentGuide_Fall 2023.docx",
-    "08_Reports/Templates/Report7_Final Project Report.docx",
-    "08_Reports/Templates/Report6_Software User Guides.docx",
-    "08_Reports/Templates/Report5_Unit Test.xls",
     "design-phase-workflow.visual-check.1440x900.dark.png",
     "design-phase-workflow.visual-check.1440x900.light.png",
     "design-phase-workflow.visual-check.2048x1320.dark.png",

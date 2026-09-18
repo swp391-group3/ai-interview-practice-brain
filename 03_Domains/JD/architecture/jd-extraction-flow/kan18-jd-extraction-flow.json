@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "KAN-18 — Raw JD to Validated StructuredJD",
+    "output": "03_Domains/JD/architecture/jd-extraction-flow/kan18-jd-extraction-flow.html",
+    "viewBox": [1120, 485],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "full-pipeline",
+        "label": "Full Extraction Lifecycle",
+        "focus": ["raw_jd", "orchestrator", "normalizer", "extractor_port", "openai_adapter", "gemini_api", "candidate", "validator", "structured_jd"],
+        "note": "Complete request-response cycle from raw input string to validated StructuredJD entity."
+      },
+      {
+        "id": "input-policy",
+        "label": "Input Normalization Gate",
+        "focus": ["raw_jd", "orchestrator", "normalizer", "err_input"],
+        "note": "Strict Unicode and length pre-checks prevent unnecessary provider LLM invocation."
+      },
+      {
+        "id": "retry-mechanism",
+        "label": "Retry Circuit & Failures",
+        "focus": ["extractor_port", "openai_adapter", "gemini_api", "candidate", "validator", "err_terminal"],
+        "note": "Bounded retry budget (max 1 retry, 100ms backoff) for transient HTTP errors and malformed output."
+      },
+      {
+        "id": "trust-boundaries",
+        "label": "Domain Trust Boundaries",
+        "focus": ["raw_jd", "gemini_api", "candidate", "validator", "structured_jd"],
+        "note": "Clear separation between untrusted AI proposals and deterministic domain validation."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "raw_jd",
+      "type": "external",
+      "label": "Raw Job Description",
+      "sublabel": "untrusted text input",
+      "pos": [40, 150],
+      "size": [136, 60],
+      "tag": "UNTRUSTED"
+    },
+    {
+      "id": "orchestrator",
+      "type": "backend",
+      "label": "JD Orchestrator",
+      "sublabel": "Service.Extract",
+      "pos": [250, 150],
+      "size": [138, 60],
+      "tag": "owns retries",
+      "brand": "go"
+    },
+    {
+      "id": "normalizer",
+      "type": "security",
+      "label": "Input Normalizer",
+      "sublabel": "NormalizeInput",
+      "pos": [460, 150],
+      "size": [138, 60],
+      "tag": "100-20k runes"
+    },
+    {
+      "id": "err_input",
+      "type": "security",
+      "label": "Input Error Exit",
+      "sublabel": "INVALID_JD_INPUT",
+      "pos": [460, 42],
+      "size": [138, 52],
+      "tag": "no LLM call"
+    },
+    {
+      "id": "extractor_port",
+      "type": "backend",
+      "label": "Extractor Port",
+      "sublabel": "service.Extractor",
+      "pos": [670, 150],
+      "size": [138, 60],
+      "tag": "interface",
+      "brand": "go"
+    },
+    {
+      "id": "config",
+      "type": "cloud",
+      "label": "LLM Config",
+      "sublabel": "shared/config.go",
+      "pos": [880, 42],
+      "size": [138, 52],
+      "tag": ".env.example"
+    },
+    {
+      "id": "openai_adapter",
+      "type": "backend",
+      "label": "OpenAI Adapter",
+      "sublabel": "provider.OpenAI",
+      "pos": [880, 150],
+      "size": [138, 60],
+      "tag": "1 MiB cap"
+    },
+    {
+      "id": "gemini_api",
+      "type": "external",
+      "label": "Google Gemini API",
+      "sublabel": "gemini-3.1-flash-lite",
+      "pos": [880, 300],
+      "size": [138, 60],
+      "tag": "EXTERNAL AI",
+      "brand": "google-gemini"
+    },
+    {
+      "id": "candidate",
+      "type": "backend",
+      "label": "ExtractionCandidate",
+      "sublabel": "model.go proposal",
+      "pos": [670, 300],
+      "size": [138, 60],
+      "tag": "UNTRUSTED"
+    },
+    {
+      "id": "validator",
+      "type": "security",
+      "label": "Domain Validator",
+      "sublabel": "ValidateCandidate",
+      "pos": [460, 300],
+      "size": [138, 60],
+      "tag": "deterministic"
+    },
+    {
+      "id": "err_terminal",
+      "type": "security",
+      "label": "Terminal Error",
+      "sublabel": "EXTRACTION_FAILED",
+      "pos": [460, 410],
+      "size": [138, 52],
+      "tag": "retries exhausted"
+    },
+    {
+      "id": "structured_jd",
+      "type": "database",
+      "label": "StructuredJD",
+      "sublabel": "validated model",
+      "pos": [250, 300],
+      "size": [138, 60],
+      "tag": "TRUSTED DOMAIN",
+      "brand": "go"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "UNTRUSTED CALLER & INPUT GATE",
+      "wraps": ["raw_jd", "orchestrator", "normalizer", "err_input"],
+      "pad": 10
+    },
+    {
+      "kind": "security-group",
+      "label": "PROVIDER ADAPTER & CONFIG",
+      "wraps": ["extractor_port", "openai_adapter", "config"],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "EXTERNAL LLM & UNTRUSTED PROPOSAL",
+      "wraps": ["gemini_api", "candidate"],
+      "pad": 10
+    },
+    {
+      "kind": "security-group",
+      "label": "TRUSTED DOMAIN VALIDATION & ENTITY",
+      "wraps": ["validator", "structured_jd", "err_terminal"],
+      "pad": 10
+    }
+  ],
+  "connections": [
+    {
+      "id": "raw_to_orchestrator",
+      "from": "raw_jd",
+      "to": "orchestrator",
+      "label": "raw text",
+      "variant": "emphasis"
+    },
+    {
+      "id": "orchestrator_to_normalizer",
+      "from": "orchestrator",
+      "to": "normalizer",
+      "label": "clean",
+      "variant": "emphasis"
+    },
+    {
+      "id": "normalizer_to_err",
+      "from": "normalizer",
+      "to": "err_input",
+      "label": "invalid input",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDy": -16
+    },
+    {
+      "id": "normalizer_to_port",
+      "from": "normalizer",
+      "to": "extractor_port",
+      "label": "normalized JD",
+      "variant": "emphasis"
+    },
+    {
+      "id": "config_to_adapter",
+      "from": "config",
+      "to": "openai_adapter",
+      "label": "runtime cfg",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [949, 120]
+    },
+    {
+      "id": "port_to_adapter",
+      "from": "extractor_port",
+      "to": "openai_adapter",
+      "label": "delegates",
+      "variant": "emphasis"
+    },
+    {
+      "id": "adapter_to_gemini",
+      "from": "openai_adapter",
+      "to": "gemini_api",
+      "label": "HTTP POST",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "gemini_to_candidate",
+      "from": "gemini_api",
+      "to": "candidate",
+      "label": "JSON output",
+      "variant": "emphasis"
+    },
+    {
+      "id": "candidate_to_validator",
+      "from": "candidate",
+      "to": "validator",
+      "label": "proposes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "validator_to_terminal",
+      "from": "validator",
+      "to": "err_terminal",
+      "label": "exhausted",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [529, 380]
+    },
+    {
+      "id": "validator_to_retry",
+      "from": "validator",
+      "to": "openai_adapter",
+      "label": "retry (max 1, 100ms)",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [[529, 235], [830, 235], [830, 180]],
+      "labelAt": [680, 224]
+    },
+    {
+      "id": "validator_to_structured",
+      "from": "validator",
+      "to": "structured_jd",
+      "label": "valid entity",
+      "variant": "emphasis"
+    },
+    {
+      "id": "structured_to_orchestrator",
+      "from": "structured_jd",
+      "to": "orchestrator",
+      "label": "delivers",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelAt": [319, 235]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Domain Trust & Flow",
+      "items": [
+        "Service.Extract orchestrates pre-validation (100–20,000 runes), provider extraction, candidate validation, and retries.",
+        "Deterministic candidate validation enforces enums, trims values, and rejects conflicting duplicate skill metadata.",
+        "StructuredJD represents the final immutable, trusted domain contract terminating KAN-18."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Retry Budget & Errors",
+      "items": [
+        "Shared retry budget: LLM_MAX_RETRIES = 0 or 1 (maximum 2 provider attempts with 100ms backoff).",
+        "Provider HTTPError implements RetryableFailure (429, 500, 502, 503, 504); service stays HTTP-agnostic.",
+        "AppError codes: INVALID_JD_INPUT, JD_TOO_SHORT, EXTRACTION_FAILED, INVALID_EXTRACTION_OUTPUT."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Configuration & Scope",
+      "items": [
+        "Configured via config.Config (.env.example): provider=openai_compatible, endpoint=Gemini, model=gemini-3.1-flash-lite.",
+        "Verified testing evidence: unit suites (service_test, openai_test) and real Gemini smoke test PASS in ~1.46s.",
+        "Explicitly out of scope: REST API / DB persistence (KAN-19), PDF parsing (KAN-44), and Blueprint generation."
+      ]
+    }
+  ]
+}
