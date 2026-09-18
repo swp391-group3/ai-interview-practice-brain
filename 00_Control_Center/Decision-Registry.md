@@ -36,8 +36,8 @@ last_verified: 2026-09-18
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Backend Core** | Feature-oriented backend structure under `api/internal/features/*` with router/handler/provider infrastructure | `ACCEPTED` | Merged PR #13 / `main` | 2026-09-18 | Legacy `internal/auth`, `internal/shared`, `cmd/http` references | Current merged package structure. |
 | **JD Extraction** | Technical-only structured extraction with deterministic validation; Gemini through Eino is current adapter | `ACCEPTED` | Merged PR #9 / `main` | 2026-09-18 | Draft schema with soft skills/years | Provider/model policy still configurable. |
-| **Database** | Feature-local auth + JD sqlc entries | `RESOLVED IN OPEN PR / PENDING MERGE` | PR #15 `api/sqlc.yaml` | 2026-09-18 | OQ-04 open framing | Not merged acceptance. |
-| **Blueprint DB** | Dedicated `interview_blueprints` table with JD FK `ON DELETE RESTRICT` | `OPEN PR / WORKING IMPLEMENTATION` | PR #15 migration 000002 | 2026-09-18 | Embedded `job_descriptions.blueprint` proposal | Does not establish session re-parenting/full target ERD. |
+| **Database** | Feature-local auth + JD sqlc entries | `ACCEPTED` | Merged PR #15 `api/sqlc.yaml` | 2026-09-18 | OQ-04 open framing | Current merged layout. |
+| **Blueprint DB** | Dedicated `interview_blueprints` table with JD FK `ON DELETE RESTRICT` | `ACCEPTED` | Merged PR #15 migration 000002 | 2026-09-18 | Embedded `job_descriptions.blueprint` proposal | Does not establish session re-parenting/full target ERD. |
 
 | Area | Decision Summary | State | Evidence / Authority | Date | Supersedes | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

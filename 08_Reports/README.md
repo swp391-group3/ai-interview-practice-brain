@@ -3,7 +3,7 @@ project: SEP490
 type: report
 status: current
 authority: lecturer
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Academic Reports & Lecturer Guidance
@@ -25,11 +25,18 @@ last_verified: 2026-09-11
 
 ---
 
-## 2. In-Progress & Historical Deliverables
-- **Planning & Requirements (v0.1):**
+## 2. Current and historical deliverables
+
+- **Current academic baseline (Google Drive upstream):**
+  - `Report-1-3/Report2_Project_Management_Plan_v0.2.docx` — Drive ID `1IP04AyAQE7zftVDoXeYczF-i5UK1swBm`.
+  - `Report-1-3/Report3_Software_Requirement_Specification_v0.2.docx` — Drive ID `17ZYlpx3voV4lPlQLlSxP6fBLa-D-AAbb`; SHA-256 `0bc266d35697a4273faf67b4973892487725238ff63a8ad92ed7604dd5acb04d` verified locally.
+- **Report 2 checksum discrepancy:** the current Drive download hashes to `40996f89f2e52226feaa87b748ddcf5457eb1174b04e5f11aecbd2a09d262295`, not the supplied expected `3844af746c886c7d5c897c138cf3e8acb50d1b0838b2f47a88f0de6cacc75798`. Preserve this as Drive/version evidence pending clarification.
+- **Historical v0.1 copies:**
   - `Report-1-3/Report1_Project_Introduction_v0.1.docx`
   - `Report-1-3/Report2_Project_Management_Plan_v0.1.docx`
   - `Report-1-3/Report3_Software_Requirement_Specification_v0.1.docx`
+
+Reports are Category E requirement/reference sources and submitted deliverables. They do not silently override accepted engineering contracts or merged implementation.
 
 ---
 

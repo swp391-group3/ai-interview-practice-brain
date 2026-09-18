@@ -8,6 +8,16 @@ last_verified: 2026-09-18
 
 # Vault Synchronization Log
 
+## 2026-09-18 — Incremental merge checkpoint sync
+
+**Code checkpoint:** PR #14 merged at `10e00613a010cd51be837b4da9a0abaa56f4d5f4`; PR #15 merged at `97abe3bf9eadb92051b8a8b5337ea62d0ecbe565`. Local `main` has since advanced with landing work.
+
+- Promoted PR #14 config/lifecycle, Air, CORS/logging, Swagger, Testcontainers, Makefile and review-workflow facts to merged implementation. Recorded config-file port `3000` separately from Makefile local fallback `8080`.
+- Promoted PR #15 `/jds` API, reviewed JD persistence, JD sqlc feature layout, error mappings, Swagger, and `interview_blueprints` migration to merged implementation. KAN-19 Jira/code discrepancy is resolved.
+- Preserved the remaining Blueprint → Session target gap: merged table does not prove session re-parenting, snapshot/lifecycle completion, or all BR-01..BR-13.
+- Imported Report 2 and Report 3 v0.2 from Drive, registered them as Category E academic sources, and indexed WBS/use-case/screen traceability. Report 3 SHA matched; Report 2 current Drive file hash differed from supplied expected hash and is recorded for resolution.
+- Registered the standalone Design repository and its canonical/experimental authority boundary. Recorded Registration, Candidate Dashboard, Blueprint Preview ordering, and avatar-selection granularity as SRS/design gaps for a UI/UX pass.
+
 ## 2026-09-18 — Full contract synchronization
 
 **Sources inspected:** brain `main`; source-repository `main` at `bfdc9cc4`; local branches `chore/backend-foundation` and `feature/jd-api`; source files and branch diffs.
@@ -118,4 +128,3 @@ last_verified: 2026-09-18
 ### Status & Authority
 - All artifacts strictly marked **LOCAL WORKING CONTRACT / PROPOSED TEAM CONTRACT** pending backend team review and ratification.
 - Production source code untouched; Jira untouched; KAN-46 retained as `IN PROGRESS`.
-

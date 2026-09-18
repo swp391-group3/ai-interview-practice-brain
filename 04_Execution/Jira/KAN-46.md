@@ -10,4 +10,4 @@ last_verified: 2026-09-18
 
 **Jira:** `DONE`. The contract preserves separation among JD, reviewed JD, configuration, blueprint, session, and snapshot; it treats blueprints as reusable assessment plans rather than static question lists.
 
-**Implementation distinction:** PR #15 open creates the standalone `interview_blueprints` table and JD foreign key restriction. It does not demonstrate session re-parenting or all target ERD/business rules. See [[JD-Blueprint]].
+**Implementation distinction:** merged PR #15 creates the standalone `interview_blueprints` table and JD foreign key restriction. It does not demonstrate session re-parenting or all target ERD/business rules. See [[JD-Blueprint]].

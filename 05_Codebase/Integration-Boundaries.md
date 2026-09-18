@@ -17,9 +17,9 @@ flowchart LR
   A --> DB[(PostgreSQL)]
   J --> L[Gemini through Eino]
   J --> DB
-  P[PR #15 only: /jds persistence + Swagger] -.-> R
+  P[Merged PR #15: /jds persistence + Swagger] --> R
 ```
 
 Frontend does not access PostgreSQL, JWT secrets, or provider credentials. `response.Envelope` is the API transport boundary. The frontend fetch client must not assume null fields because envelope serialization uses `omitempty`.
 
-`features/jd` extraction and external Gemini/Eino integration are merged. PR #15 persistence/API wiring is open; PDF, interview, speech, avatar, and payment integrations remain future or separate work.
+`features/jd` extraction and external Gemini/Eino integration are merged. PR #15 persistence/API wiring is merged; PDF, interview, speech, avatar, and payment integrations remain future or separate work.

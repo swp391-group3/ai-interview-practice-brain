@@ -39,11 +39,13 @@ Do not revive the legacy `cmd/http`, `internal/auth`, `internal/shared`, `pkg/ut
 - Surface known failures as `*apperror.AppError` with a stable uppercase code.
 - Feature code is organized beneath `internal/features/<feature>`; router/handler/provider infrastructure remains outside feature packages.
 
-## OPEN PR / WORKING IMPLEMENTATION
+## Merged tooling foundation
 
-PR #14 (`chore/backend-foundation`) adds/changes Air, lifecycle/config stabilization, CORS/request logging, Swagger, PostgreSQL Testcontainers, Makefile targets, and review tooling. PR #15 also carries Swagger and tests. These are not merged guarantees until their branch merges.
+Merged PR #14 adds/changes Air, lifecycle/config stabilization, CORS/request logging, Swagger, PostgreSQL Testcontainers, Makefile targets, and on-demand OpenCode review tooling. PR #15 merged the JD persistence/API additions.
 
-PR #15 has a two-entry `api/sqlc.yaml` for `internal/features/auth/repository` and `internal/features/jd/repository`; this resolves the working layout but remains pending merge.
+`api/sqlc.yaml` has entries for `internal/features/auth/repository` and `internal/features/jd/repository`.
+
+`configs/config.yaml` defaults `server.port` to `3000`; `make run` and `make dev` fall back to `SERVER_PORT=8080` only when the root environment omits it. Neither is a universal permanent port.
 
 ## Verification pointers
 

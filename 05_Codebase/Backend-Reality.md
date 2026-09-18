@@ -16,11 +16,11 @@ Auth is in `api/internal/features/auth`; `/auth/login` works (the nested route b
 
 JD extraction exists in `api/internal/features/jd`: Eino sends an exact structured JSON request through the configured Gemini model, then deterministic validation enforces the current technical-competency contract. LLM and provider absence are no longer valid claims.
 
-## OPEN PR / WORKING IMPLEMENTATION
+## Merged PR #14 / #15 reality
 
-PR #14 (`chore/backend-foundation`) contains config/lifecycle, Air, CORS/logging, Swagger, Testcontainers, Makefile and review-workflow changes.
+PR #14 merged config/lifecycle, Air, CORS/logging, Swagger, Testcontainers, Makefile and review-workflow changes. Config file port is 3000 while Makefile local commands fall back to 8080 when `SERVER_PORT` is absent.
 
-PR #15 (`feature/jd-api`) adds feature-local JD repository/sqlc code, authenticated `/jds` handlers, Swagger, integration tests, `JD_NOT_FOUND`/`JD_IN_USE`, and migration 000002. It is not merged.
+PR #15 merged feature-local JD repository/sqlc code, authenticated `/jds` handlers, Swagger, integration tests, `JD_NOT_FOUND`/`JD_IN_USE`, and migration 000002. `GET /jds` is paginated and response DTOs omit `userId`.
 
 ## Not verified as implemented
 

@@ -12,7 +12,7 @@ last_verified: 2026-09-18
 
 The retained business contract separates JD requirements, reviewed JD, interview configuration, reusable blueprint, execution session, and historical snapshot. Its desired cardinality is JD 1:N Blueprint and Blueprint 1:N Session. A blueprint defines assessment objectives, timing, rubric and question budget; runtime questions remain adaptive rather than pre-baked.
 
-## OPEN PR / WORKING IMPLEMENTATION — PR #15
+## MERGED IMPLEMENTATION — PR #15
 
 Migration 000002 drops `job_descriptions.blueprint`, then creates `interview_blueprints` with `id`, `job_description_id`, `difficulty`, `duration_minutes`, `question_count`, `blueprint_data`, `contract_version`, and timestamps. The JD foreign key is `ON DELETE RESTRICT`.
 

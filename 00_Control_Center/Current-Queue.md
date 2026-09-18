@@ -11,7 +11,7 @@ last_verified: 2026-09-18
 | Jira | Current Jira status | Code / delivery reading |
 |---|---|---|
 | [[KAN-18]] | `DONE` | Merged structured JD extraction |
-| [[KAN-19]] | `DONE` | **GAP:** principal repository/API implementation is PR #15, still open |
+| [[KAN-19]] | `DONE` | Merged reviewed-JD persistence and authenticated REST API (PR #15) |
 | [[KAN-46]] | `DONE` | Contract/design completed; full database/session realization is not proven |
 | [[KAN-20]] | `IN PROGRESS` | JD upload/review/preview UI; code remains placeholder at last verification |
 | [[KAN-44]] | `IN PROGRESS` | PDF extraction; library choice not verified |

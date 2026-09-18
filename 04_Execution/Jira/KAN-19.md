@@ -10,6 +10,6 @@ last_verified: 2026-09-18
 
 **Jira:** `DONE`.
 
-**OPEN PR / WORKING IMPLEMENTATION:** PR #15 (`feature/jd-api`) supplies PostgreSQL/sqlc persistence, ownership-scoped CRUD, six authenticated `/jds` routes, response/error mappings, multi-entry sqlc config, and the blueprint migration.
+**MERGED IMPLEMENTATION:** PR #15 supplies PostgreSQL/sqlc persistence, ownership-scoped CRUD, six authenticated `/jds` routes, response/error mappings, multi-entry sqlc config, and the blueprint migration.
 
-**GAP / authority discrepancy:** PR #15 is still open and unmerged, so none of that is merged `main` implementation. Old `/api/v1/jd/*` routes are superseded. See [[JD-Persistence]] and [[API-Contract]].
+**Remaining gap:** dedicated blueprints are merged, but full target session re-parenting/lifecycle is not. Old `/api/v1/jd/*` routes are superseded. See [[JD-Persistence]] and [[API-Contract]].

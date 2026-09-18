@@ -10,8 +10,7 @@ last_verified: 2026-09-18
 
 ## Authority boundary
 
-- **MERGED IMPLEMENTATION (`main`):** `GET /health`, `POST /auth/login`, response envelope, access-token middleware, and refresh-cookie login behavior.
-- **OPEN PR / WORKING IMPLEMENTATION (PR #15, `feature/jd-api`):** `/jds` routes, JD persistence mappings, `JD_NOT_FOUND`/`JD_IN_USE`, and `/swagger/*any`. These are not merged API commitments.
+- **MERGED IMPLEMENTATION (`main`):** `GET /health`, `POST /auth/login`, response envelope, access-token middleware, refresh-cookie login behavior, `/jds` routes, JD persistence mappings, and `/swagger/*any`.
 
 ## Wire format — ACCEPTED CONTRACT
 
@@ -42,20 +41,20 @@ Protected routes use `Authorization: Bearer <access-token>`. Middleware validate
 
 ## Error registry
 
-| Code | HTTP status in merged `main` | PR #15 working mapping |
+| Code | HTTP status in merged `main` | Merged PR #15 mapping |
 |---|---:|---:|
 | `INVALID_CREDENTIALS`, `INVALID_TOKEN` | 401 | 401 |
 | `USER_NOT_FOUND` | 404 | 404 |
 | `USER_INACTIVE` | 403 | 403 |
 | `VALIDATION_ERROR`, `INVALID_JD_INPUT`, `JD_TOO_SHORT`, `JD_TOO_LONG` | 400 (where registered) | 400 |
-| `EXTRACTION_FAILED`, `INVALID_EXTRACTION_OUTPUT` | not mapped to 502 in `main` | 502 |
+| `EXTRACTION_FAILED`, `INVALID_EXTRACTION_OUTPUT` | 502 | 502 |
 | `INTERNAL_ERROR` | 500 | 500 |
-| `JD_NOT_FOUND` | absent | 404 |
-| `JD_IN_USE` | absent | 409 |
+| `JD_NOT_FOUND` | 404 | 404 |
+| `JD_IN_USE` | 409 | 409 |
 
-All codes are uppercase stable strings. The PR #15 mappings remain **OPEN PR / WORKING IMPLEMENTATION**.
+All codes are uppercase stable strings.
 
-## PR #15 route surface — OPEN PR / WORKING IMPLEMENTATION
+## Merged JD route surface — PR #15
 
 All require Bearer authentication:
 
@@ -63,12 +62,12 @@ All require Bearer authentication:
 |---|---|---|
 | POST | `/jds/analyze` | Analyze raw text without saving |
 | POST | `/jds` | Persist a reviewed JD; returns 201 envelope |
-| GET | `/jds` | List caller-owned JDs |
+| GET | `/jds` | List caller-owned JDs; paginated |
 | GET | `/jds/:id` | Fetch a caller-owned JD |
 | PUT | `/jds/:id` | Update reviewed structured fields; raw text stays immutable |
 | DELETE | `/jds/:id` | Delete caller-owned JD; returns 204 on success |
 
-`/swagger/*any` is also open-PR Swagger infrastructure. Stale `/api/v1/jd/upload` and `/api/v1/jd/:id/blueprint` proposals are superseded, not current routes.
+`/swagger/*any` is merged Swagger infrastructure. List uses `limit` (default 20, 1–100) and `offset` (default 0); data contains `items` plus `pagination.limit`, `pagination.offset`, and `pagination.total`. Public JD responses do not expose `userId`. Stale `/api/v1/jd/upload` and `/api/v1/jd/:id/blueprint` proposals are superseded, not current routes.
 
 ## Configuration
 

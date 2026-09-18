@@ -10,7 +10,7 @@ last_verified: 2026-09-18
 
 ```mermaid
 flowchart LR
-  K18[KAN-18 extraction — Done / merged] --> K19[KAN-19 persistence API — Jira Done, PR #15 open]
+  K18[KAN-18 extraction — Done / merged] --> K19[KAN-19 persistence API — Done / merged]
   K19 --> K20[KAN-20 review UI — In progress]
   K44[KAN-44 PDF ingestion — In progress] -. separate text boundary .-> K18
   K45[KAN-45 evaluation dataset — In progress] --> K18

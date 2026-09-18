@@ -8,6 +8,10 @@ last_verified: 2026-09-18
 
 # Monorepo Structure Map
 
+## Related design source
+
+`/home/dorriss/Projects/university/sep490/ai-interview-practice-design` is the standalone Design repository. Its `DESIGN-CONTRACT.md`, `brand/`, `product/SCREEN-INVENTORY.md`, and `product/FIGMA-PRODUCT-DESIGN-REPORT.md` are the canonical approved UI/UX source; `exploration/` is not automatically canonical. The Brain links cross-domain contracts rather than duplicating detailed design artifacts.
+
 ```text
 ai-interview-practice/
 ├── api/
@@ -23,4 +27,4 @@ ai-interview-practice/
 └── docs/                          # source-repository documentation
 ```
 
-`api/internal/features/jd` is merged for extraction. PR #15 additionally makes `features/jd/repository` and `handler/jd_handler.go` working code. Legacy paths `cmd/http`, `internal/auth`, `internal/shared`, and `pkg/util` are not current.
+`api/internal/features/jd` is merged for extraction and persistence. PR #15 added `features/jd/repository` and `handler/jd_handler.go`, now merged. Legacy paths `cmd/http`, `internal/auth`, `internal/shared`, and `pkg/util` are not current.

@@ -3,7 +3,7 @@ project: SEP490
 type: control
 status: accepted
 authority: local-brain
-last_verified: 2026-09-11
+last_verified: 2026-09-18
 ---
 
 # Source of Truth & Authority Model
@@ -34,10 +34,18 @@ graph TD
 | :--- | :--- | :--- | :--- |
 | **A** | **ACCEPTED / NORMATIVE** | Team-approved architectural decision records (ADRs), ratified interface contracts, explicitly confirmed team agreements. | `api/` root structure, `sqlc` + `pgx/v5`, `pkg/apperror`, `pkg/response`. |
 | **B** | **DESIRED STATE** | Explicit Jira ticket acceptance criteria, confirmed team commitments, approved sprint goals. | [[KAN-46]] blueprint contract target, [[KAN-18]] extraction scope. |
-| **C** | **IMPLEMENTATION REALITY** | What reviewed code executes; distinguish merged `main` from open reviewed branches. | Merged: Go 1.27, Gin `/auth/login`, Next.js 16 and custom fetch transport. Open PR: JD REST/persistence. |
+| **C** | **IMPLEMENTATION REALITY** | What reviewed code executes; distinguish merged `main` from open reviewed branches. | Merged: Go 1.27, Gin `/auth/login`, `/jds`, Next.js 16 and custom fetch transport. |
 | **D** | **MEETING / WORKING DECISION** | Discussed or tentatively agreed in meetings/Discord, but not yet formalized in an ADR. | Tentative pipeline separation for PDF parsing vs. LLM. |
 | **E** | **REQUIREMENT / REFERENCE** | Capstone registration documents, university syllabus, lecturer constraints, formal academic submissions. | 3D avatar presence, voice interaction, 20 concurrent users, Report 7 docx submission rules. |
 | **F** | **LEGACY / SPECULATIVE** | Historical specifications, superseded plans, unvalidated AI architectural proposals. | `SPECIFICATION.md` v1.1.0, `IMPLEMENTATION_PLAN.md` v2.1.0. |
+
+## Source systems
+
+- **Brain repository / this local working copy:** interpreted contracts and accepted ADRs; the local vault is not an independent authority.
+- **Code repository `main`:** implementation reality.
+- **Jira:** desired delivery state and accepted ticket scope.
+- **Design repository:** approved UI/UX artifacts and decisions; `exploration/` is non-canonical unless promoted.
+- **Google Drive reports:** Category E requirement/reference and submitted academic deliverables; they do not silently override contracts or merged code.
 
 ---
 

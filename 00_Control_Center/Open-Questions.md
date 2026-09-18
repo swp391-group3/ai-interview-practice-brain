@@ -10,7 +10,7 @@ last_verified: 2026-09-18
 
 ## OQ-01: Blueprint contract versus implementation
 
-**Status:** `REFINED — JIRA DONE; IMPLEMENTATION GAP REMAINS`. KAN-46 records the desired conceptual contract. PR #15 gives open-PR evidence for a separate `interview_blueprints` table and JD 1:N relationship, but does not re-parent sessions or prove all BR-01..BR-13. See [[JD-Blueprint]].
+**Status:** `REFINED — JIRA DONE; IMPLEMENTATION GAP REMAINS`. KAN-46 records the desired conceptual contract. Merged migration 000002 gives a separate `interview_blueprints` table and JD 1:N relationship, but does not re-parent sessions or prove all BR-01..BR-13. See [[JD-Blueprint]].
 
 ## OQ-02: Structured JD schema
 
@@ -22,7 +22,7 @@ last_verified: 2026-09-18
 
 ## OQ-04: sqlc feature layout
 
-**Status:** `RESOLVED IN OPEN PR / PENDING MERGE`. PR #15 has separate sqlc entries for auth and JD feature repositories. It is not yet a merged accepted decision.
+**Status:** `RESOLVED — MERGED IMPLEMENTATION`. `api/sqlc.yaml` has separate auth and JD feature-repository entries.
 
 ## OQ-05: LLM provider/model policy
 
