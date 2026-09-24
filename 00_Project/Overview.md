@@ -48,13 +48,13 @@ RoleCue is designed for four primary user groups:
 
 | Actor | Profile | Primary Motivation |
 | :--- | :--- | :--- |
-| **Candidate** | Software engineers, students, career switchers | Prepare for specific technical job interviews, assess technical readiness, and discover matching job postings. |
+| **Candidate** | Software engineers, students, career switchers | Prepare for specific technical job interviews, assess technical readiness, configure and conduct mock interviews, generate a personal 3D avatar from photo, manage membership, and discover matching job postings. |
 | **Recruiter** | Tech talent acquisition, hiring managers, company reps | Publish company Job Postings to attract qualified candidates and screen incoming applications. |
-| **Guest** | Unauthenticated visitors, prospective users | Explore platform capabilities, evaluate transparent pricing, preview 3D avatars, and test a brief interactive voice demo. |
-| **Administrator** | Platform operators, technical governance | Maintain platform health, curate Voice Profiles sourced from TTS providers, tune AI prompt/rubric templates, and adjudicate billing disputes. |
+| **Guest** | Unauthenticated visitors, prospective users | View the public landing page and register for an account. |
+| **Administrator** | Platform operators, technical governance | Maintain account security, approve/reject job postings, oversee interview sessions, calibrate AI behavior and evaluation criteria, curate TTS voice profiles, track membership revenue, and update membership prices. |
 
 > [!NOTE]
-> System semantics also recognize **Registered User** (the shared authentication and profile base for Candidates and Recruiters) and **System Handler** (the automated daemon executing scheduled background jobs, such as session cleanup). Neither is an external actor.
+> System semantics also recognize **Registered User** (the shared authentication and profile base for Candidates and Recruiters) and **System Handler** (the internal automated handler responsible for terminating a candidate's abandoned session). Neither is an external actor.
 
 ---
 
@@ -92,9 +92,9 @@ flowchart TD
         APP --> DEC["Approve / Reject Decision"]
     end
 
-    subgraph Identity["6. 3D Identity & Monetization"]
-        PHOTO["Candidate Photo Upload"] --> AVA["Personal 3D Avatar (Avaturn)"]
-        PAY["Credit Packages & Subscriptions"] --> INVOICE["Digital VAT Invoicing"]
+    subgraph Identity["6. 3D Identity & Membership"]
+        PHOTO["Candidate Photo Upload"] --> AVA["Personal 3D Avatar Generation"]
+        PAY["Candidate Membership Subscription"] --> TRANS["Payment Transactions & Governance"]
     end
 ```
 
@@ -103,13 +103,13 @@ flowchart TD
 2. **Internal Interview Blueprint Generation:**
    Translates the approved JD, candidate refinement notes, and interview configuration into a comprehensive, structured assessment plan. Specifies topic matrices, question slots, depth thresholds, and rubrics. **The blueprint remains strictly internal and hidden from the candidate.**
 3. **Real-Time 3D Virtual Interview Simulation:**
-   Renders a 3D animated avatar in the browser via Three.js WebGL. Delivers questions using realistic TTS with 15 synchronized Oculus viseme morph targets. Listens to candidate responses via client-side Voice Activity Detection (VAD) and Speech-to-Text (STT). Dynamically adapts the conversation with follow-ups.
+   Renders a 3D animated avatar in the browser via WebGL. Delivers questions using realistic TTS with synchronized blend-shape viseme lip-sync. Listens to candidate responses via client-side Voice Activity Detection (VAD) and Speech-to-Text (STT). Dynamically adapts the conversation with follow-ups.
 4. **Automated Multi-Dimensional Evaluation:**
    Grades completed sessions across 5 core competencies: *Technical Accuracy*, *Depth of Understanding*, *Problem-Solving*, *Answer Relevance*, and *Communication Clarity*. Generates comprehensive performance reports with radar charts and personalized improvement roadmaps.
 5. **Lightweight Job Posting & Application:**
    Enables Recruiters to create, update, and archive Job Postings (company JDs). Allows Candidates to browse postings and apply with their profiles. Recruiters search applications and render a final **Approve** or **Reject** decision.
-6. **Personal 3D Avatar & Customization:**
-   Supports generating a personalized 3D avatar from a single candidate portrait photograph, proven viable via the Avaturn integration spike. Allows candidates to configure interview environments and interviewer personas.
+6. **Personal 3D Avatar Generation & Customization:**
+   Supports generating a personalized 3D avatar from a single candidate portrait photograph, with technical feasibility proven through the Avaturn spike. In the composite session configuration, candidates can choose their interviewer persona, voice profile, and 3D environment.
 
 ---
 

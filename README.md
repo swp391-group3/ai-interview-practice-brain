@@ -57,7 +57,7 @@ ai-interview-practice-brain/
 ├── README.md
 ├── 00_Project/                 # Product definition, actors, flows, and terminology
 │   ├── Overview.md             # Core problem, value proposition, and boundaries
-│   ├── Actors-and-Capabilities.md # The 6 actors and 58 use-case capability mapping
+│   ├── Actors-and-Capabilities.md # Actor model and finalized capability boundaries
 │   ├── Core-Flows.md           # End-to-end user journeys (Practice, Application, Avatar)
 │   └── Glossary.md             # Locked domain terminology and distinction rules
 ├── 01_Domains/                 # Deep domain specifications & invariants
@@ -67,8 +67,8 @@ ai-interview-practice-brain/
 │   ├── Interview/README.md     # Real-time simulation, configuration, and blueprint engine
 │   ├── Avatar-Voice/README.md  # 3D avatar rendering, personal photo avatars, and TTS voices
 │   ├── Evaluation/README.md    # 5 core competencies, scoring rubrics, and roadmaps
-│   ├── Payment/README.md       # Practice credits, recruiter memberships, and VAT invoicing
-│   └── Administration/README.md # Platform governance, voice catalog, and telemetry
+│   ├── Payment/README.md       # Candidate membership subscriptions, transactions, and pricing
+│   └── Administration/README.md # Platform governance, AI behaviour, rubrics, and voice profiles
 ├── 02_System/                  # System-level models and architectural boundaries
 │   ├── Context.md              # External actors and service boundaries
 │   ├── Domain-Model.md         # Conceptual entity-relationship diagram

@@ -1,54 +1,51 @@
 ---
-title: Payment and Monetization Domain
+title: Payment and Membership Domain
 tags:
   - domain
   - payment
-  - credits
+  - membership
   - subscriptions
-  - billing
-  - invoicing
-  - refunds
+  - transactions
 aliases:
   - Payment Domain
-  - Billing Domain
+  - Membership Domain
 ---
 
-# Payment & Monetization Domain
+# Payment & Membership Domain
 
-The **Payment & Monetization Domain** manages candidate mock interview practice credits, recruiter corporate subscriptions, digital VAT invoicing, payment gateway interactions, and refund dispute resolution.
+The **Payment & Membership Domain** manages candidate membership subscriptions, payment transactions, pricing governance, and revenue reporting.
 
 ---
 
 ## 1. Purpose
 
-Provide a secure, transparent, and legally compliant monetization infrastructure for both B2C (Candidate) and B2B (Recruiter) operations. Ensures transactional idempotency, auditability, and fair dispute handling.
+Provide a secure, streamlined membership subscription infrastructure for Candidates and financial governance tools for Administrators. Ensures reliable payment processing, transaction auditability, and clear membership entitlement boundaries.
 
 ---
 
 ## 2. Core Concepts
 
-* **Candidate Practice Credits (`credit_accounts`):**
-  A prepaid balance account owned by a Candidate. Each mock interview session consumes a designated number of credits (e.g., 1 credit per 30-minute simulation).
-* **Credit Packages:**
-  Fixed tiers for purchasing candidate credits (e.g., Starter Pack, Pro Engineer Bundle).
-* **Recruiter Membership Tiers:**
-  Recurring subscription plans for Recruiters granting posting allowances and candidate application screening access.
+* **Membership Subscription (`membership_subscriptions`):**
+  A subscription record owned by a Candidate granting access to platform interview practice capabilities. Tracks subscription start date, expiration/renewal date, and status (`ACTIVE`, `CANCELLED`, `EXPIRED`).
+* **Membership Options:**
+  Platform-defined subscription choices and access entitlements presented to Candidates.
+* **Membership Status:**
+  The current entitlement state evaluated by the system before granting access to interview creation and simulation execution.
 * **Payment Transaction (`payment_transactions`):**
   An immutable financial ledger entry recording payment intents and outcomes:
-  * Attributes: User ID, Order Reference (`ORD-YYYY-xxxxxx`), Amount, Currency (VND, USD), Gateway Reference, Status (`PENDING`, `SUCCESS`, `FAILED`, `REFUNDED`).
-* **Digital VAT Invoice (`invoices`):**
-  Compliant electronic tax invoices generated upon successful B2B or B2C payments, including tax code, company name, line items, and downloadable PDF receipt.
-* **Refund Request (`refund_requests`):**
-  A formal dispute submitted by a Candidate if an interview simulation suffers unrecoverable technical failures (e.g., speech engine outage, persistent connection drop).
-  * Status Lifecycle: `SUBMITTED` $\longrightarrow$ `APPROVED` (credits restored, payment refunded) or `REJECTED`.
+  * Attributes: User ID, Order Reference, Amount, Currency (e.g., VND), Gateway Reference, Payment Status (`PENDING`, `SUCCESS`, `FAILED`), Timestamp.
+* **Membership Price:**
+  The active monetary price for candidate membership subscriptions, governed and updated by Administrators.
+* **Revenue Report:**
+  Aggregated financial reporting compiled from recorded payment transactions for administrative oversight.
 
 ---
 
 ## 3. Actors Involved
 
-* **Candidate:** Purchases practice credit bundles; views transaction history; downloads invoices; submits refund disputes.
-* **Recruiter:** Subscribes to recruiter membership tiers; manages corporate billing details; downloads corporate VAT invoices.
-* **Administrator:** Monitors platform revenue and transaction logs; adjudicates candidate refund disputes.
+* **Candidate:** Subscribes to membership, unsubscribes from membership, and views own transaction history.
+* **Administrator:** Views payment transactions, generates revenue reports, and updates membership prices.
+* **Payment Gateway (External Boundary):** Processes payment checkouts and provides cryptographically signed webhook notifications confirming payment outcomes.
 
 ---
 
@@ -57,43 +54,36 @@ Provide a secure, transparent, and legally compliant monetization infrastructure
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Candidate / Recruiter
+    actor Candidate
     participant Pay as Payment Domain
-    participant DB as Financial Ledger (ACID)
-    participant Gateway as Payment Gateway (VNPay/MoMo/Stripe)
-    participant Admin as Platform Admin
+    participant DB as Financial Ledger
+    participant Gateway as Payment Gateway
+    actor Admin as Administrator
 
-    Note over User,Gateway: 1. Checkout & Gateway Redirection
-    User->>Pay: Select Credit Pack / Membership Plan
+    Note over Candidate,Gateway: 1. Candidate Subscription Checkout
+    Candidate->>Pay: Subscribe to Membership
     Pay->>DB: Create Payment Transaction (Status: PENDING)
     Pay->>Gateway: Initialize Checkout Session
     Gateway-->>Pay: Checkout URL
-    Pay-->>User: Redirect to Gateway Portal
-    User->>Gateway: Complete Payment
-
-    Note over Gateway,DB: 2. Cryptographic Webhook Reconciliation
+    Pay-->>Candidate: Redirect to Gateway Portal
+    Candidate->>Gateway: Complete Payment
     Gateway->>Pay: POST /payments/webhook (Signed Payload)
     Pay->>Pay: Verify Cryptographic Signature
-    alt Valid Signature & Success
-        Pay->>DB: Execute ACID Transaction: Update Status=SUCCESS, Credit Balance, Issue Invoice
-        Pay-->>Gateway: HTTP 200 OK (Acknowledge)
-        Pay-->>User: Balance Updated & Invoice Ready
-    else Invalid or Duplicate
-        Pay-->>Gateway: Idempotent Ignore / Reject
-    end
+    Pay->>DB: Update Transaction (Status: SUCCESS) & Activate Membership
+    Pay-->>Candidate: Membership Active Confirmation
 
-    Note over User,Admin: 3. Refund Dispute Flow (Exceptions)
-    User->>Pay: Submit Refund Request (Session ID, Reason, Proof)
-    Pay->>DB: Create Refund Request (Status: SUBMITTED)
-    Admin->>Pay: Review Dispute Details & System Telemetry
-    alt Admin Approves Refund
-        Admin->>Pay: Approve Refund
-        Pay->>DB: Reverse Credits / Initiate Gateway Reversal
-        Pay-->>User: Notification: Refund Approved
-    else Admin Rejects Refund
-        Admin->>Pay: Reject Refund (Provide Rationale)
-        Pay-->>User: Notification: Refund Rejected
-    end
+    Note over Candidate,DB: 2. Candidate Unsubscribe Flow
+    Candidate->>Pay: Unsubscribe Membership
+    Pay->>DB: Update Membership Subscription (Status: CANCELLED)
+    Pay-->>Candidate: Unsubscribe Confirmed
+
+    Note over Admin,DB: 3. Admin Financial Governance
+    Admin->>Pay: View Payment Transactions
+    Pay->>DB: Query Transaction Records
+    Admin->>Pay: Generate Revenue Report
+    Pay->>DB: Aggregate Financial Metrics
+    Admin->>Pay: Update Membership Price (New Price)
+    Pay->>DB: Store Updated Membership Price
 ```
 
 ---
@@ -101,33 +91,33 @@ sequenceDiagram
 ## 5. Business Rules & Invariants
 
 1. **Transactional Idempotency:**
-   Payment webhooks must be strictly idempotent. Receiving duplicate webhook events for the same order reference must never result in duplicate credit allocations or balance mutations.
-2. **ACID Balance Updates:**
-   All credit balance adjustments (grants, consumption, deductions, reversals) must execute inside atomic database transactions (`SERIALIZABLE` or row-level locked `FOR UPDATE`) to prevent race conditions.
-3. **Session Pre-Authorization Gate:**
-   A Candidate cannot initiate an Interview Session without sufficient practice credits. Credits are locked or deducted upon successful room initialization.
-4. **Non-Transferability:**
-   Practice credits and subscription benefits are non-transferable between accounts.
-5. **Cryptographic Webhook Verification:**
-   Every payment callback must be cryptographically verified against the gateway's shared secret or public key before any state transition occurs.
-6. **Refund Adjudication Standard:**
-   Refunds are never processed automatically. An Administrator reviews session telemetry (error rates, disconnect timestamps) before approving or rejecting a dispute.
+   Payment webhooks must be strictly idempotent. Receiving duplicate webhook events for the same order reference must never result in duplicate membership extensions or erroneous state transitions.
+2. **Membership Entitlement Gate:**
+   Candidates must have an `ACTIVE` membership status to configure and launch live interview practice sessions.
+3. **No Practice Credit Accounts or Packages:**
+   RoleCue does **NOT** operate a practice credit ledger, credit wallet, per-interview credit deductions, or credit bundle packages. Access is governed through Candidate Membership.
+4. **No Recruiter Subscriptions or Corporate Invoicing:**
+   Recruiter accounts do not require paid membership tiers, corporate subscription packages, or digital VAT tax invoices.
+5. **No Refund Dispute Queue:**
+   RoleCue does not model refund dispute workflows, refund request forms, or administrative refund adjudication queues.
+6. **Immutability of Payment Transactions:**
+   Financial ledger records are append-only. Once recorded, transaction history cannot be modified or deleted.
+7. **Cryptographic Webhook Verification:**
+   Every payment callback must be cryptographically verified against the gateway's shared secret or public key before updating transaction or membership status.
 
 ---
 
 ## 6. Relationships to Other Domains
 
 * **[[01_Domains/Interview/README|Interview Domain]]:**
-  Authorizes session launch based on credit availability. Deducts credits upon session start.
-* **[[01_Domains/Job-Posting-Application/README|Job-Posting-Application Domain]]:**
-  Gates recruiter job posting volume based on active membership tier limits.
-* **[[01_Domains/Administration/README|Administration Domain]]:**
-  Administrators oversee financial analytics and adjudicate refund requests.
+  Verifies active candidate membership status prior to session initialization and launch.
 * **[[01_Domains/Auth/README|Auth Domain]]:**
-  All transactions, invoices, and credit balances are tied to authenticated `user_id` records.
+  Associates membership subscriptions and payment transactions with the authenticated Candidate `user_id`.
+* **[[01_Domains/Administration/README|Administration Domain]]:**
+  Administrators audit payment transactions, generate revenue reports, and manage membership pricing.
 
 ---
 
 ## 7. External Integrations
 
-* **Payment Gateway:** External processors supporting credit card, bank transfer, and e-wallet checkout (e.g., VNPay, MoMo, PayOS, Stripe).
+* **Payment Gateway:** External electronic payment processors (e.g., VNPay, MoMo, PayOS, Stripe) facilitating candidate membership checkouts and delivering signed status webhooks.

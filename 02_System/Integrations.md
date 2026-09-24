@@ -38,7 +38,7 @@ flowchart LR
         JD["JD Ingestion"]
         INT["Interview Engine"]
         EVAL["Evaluation Engine"]
-        BILL["Billing & Auth"]
+        BILL["Membership & Payments"]
     end
 
     subgraph Adapters["Integration Adapters"]
@@ -50,11 +50,11 @@ flowchart LR
     end
 
     subgraph Providers["External Providers"]
-        P_LLM["LLM Provider<br/>(Gemini / OpenAI / Claude)"]
-        P_STT["STT Provider<br/>(Deepgram / Whisper)"]
-        P_TTS["TTS Provider<br/>(Azure Speech / ElevenLabs)"]
-        P_PAY["Payment Gateway<br/>(VNPay / MoMo / Stripe)"]
-        P_MAIL["Email Provider<br/>(Resend / SendGrid / SMTP)"]
+        P_LLM["LLM Provider<br/>(Semantic Extraction, Dialogue, Evaluation)"]
+        P_STT["STT Provider<br/>(Speech-to-Text)"]
+        P_TTS["TTS Provider<br/>(Text-to-Speech & Visemes)"]
+        P_PAY["Payment Gateway<br/>(Electronic Checkout & Webhooks)"]
+        P_MAIL["Email Provider<br/>(Transactional Mail & Notices)"]
     end
 
     JD --> A_LLM
@@ -82,43 +82,34 @@ flowchart LR
   * **Interview Planning:** Autonomously builds the internal, hidden Interview Blueprint from approved requirements, refinement notes, and configuration parameters.
   * **Adaptive Conversational Probing:** Analyzes candidate speech turns in real time to generate contextual technical follow-up questions or transition between blueprint competency slots.
   * **Multi-Dimensional Evaluation:** Evaluates full session transcripts against blueprint rubrics across the 5 Core Competencies.
-* **Latency Budget:**
-  * Extraction & Evaluation: Asynchronous batch requests ($\le 10$ seconds).
-  * Conversational Probing: Real-time turn generation ($\le 1.5$ seconds target).
 * **Fault Handling:**
-  * If extraction fails or outputs invalid schema, the system retries with temperature adjustment; surfaces `EXTRACTION_FAILED` if unresolvable.
+  * If extraction fails or outputs an invalid schema, the system retries with adjusted parameters; surfaces an extraction failure if unresolvable.
   * If real-time probing times out during a live turn, the interview engine falls back to pre-budgeted default questions from the blueprint.
 
 ### 3.2. Speech-to-Text (STT) Provider
 * **Purpose:**
   Transcribes incoming candidate audio stream chunks into clean text transcripts during live interview simulations.
-* **Latency Budget:**
-  Sub-second transcription latency ($\le 500$ ms target from speech boundary detection to final transcript).
-* **Audio Format:**
-  16 kHz / 48 kHz mono PCM or Opus audio streaming over secure WebSocket.
 * **Fault Handling:**
-  In the event of partial packet loss or STT dropouts, the system requests the candidate to repeat their response or prompts them via visual chat cues.
+  In the event of partial packet loss or STT dropouts, the system prompts the candidate or allows speech retry to maintain conversational continuity.
 
 ### 3.3. Text-to-Speech (TTS) Provider
 * **Purpose:**
-  Synthesizes realistic spoken interviewer audio from generated question text and produces synchronized phoneme/viseme timing arrays.
+  Synthesizes realistic spoken interviewer audio from generated question text and produces synchronized blend-shape viseme timing metadata.
 * **Requirements:**
-  * Must support returning speech audio paired with **viseme timestamp metadata** (compatible with the 15 standard Oculus blend-shapes).
-  * Must support multiple voice styles (configured as Admin-managed Voice Profiles).
-* **Latency Budget:**
-  Time-to-first-audio-chunk $\le 800$ ms over streaming audio connections.
+  * Must support returning speech audio paired with viseme timing metadata for facial blend-shape animation.
+  * Must support multiple voice styles (cataloged and managed as Admin-governed Voice Profiles).
 * **Fault Handling:**
-  If the TTS stream fails, the session displays the question as text while attempting audio reconnection, avoiding session abort.
+  If the TTS stream fails, the session can display the question as text while attempting audio reconnection, avoiding an abrupt session abort.
 
 ### 3.4. Payment Gateway
 * **Purpose:**
-  Facilitates secure electronic payment processing for candidate practice credit packages and recruiter corporate subscriptions.
+  Facilitates secure electronic payment processing for candidate membership subscriptions.
 * **Provider Flexibility:**
-  Supports localized Vietnamese payment rails (e.g., VNPay, MoMo, PayOS) and international credit/debit card processors (e.g., Stripe).
+  Supports localized payment rails and international card processors.
 * **Security & Invariants:**
   * Webhook callbacks must be cryptographically signed by the gateway.
-  * Webhook handlers must verify signatures and maintain strictly idempotent processing to prevent duplicate account crediting.
-  * Credit adjustments must execute within database transactions.
+  * Webhook handlers must verify signatures and maintain strictly idempotent processing to prevent duplicate status changes or activations.
+  * Subscription activations and transaction state updates must execute within database transactions.
 
 ### 3.5. Email Provider
 * **Purpose:**
@@ -126,6 +117,6 @@ flowchart LR
   * Account registration verification tokens.
   * Password recovery links.
   * Application submission confirmations and status change notices (Approved/Rejected).
-  * Security alerts and billing receipts.
+  * Security alerts and account notifications.
 * **Operational Invariants:**
-  Asynchronous queue-based dispatch; failures in email delivery must never block core HTTP transactional API flows.
+  Asynchronous queue-based dispatch; failures in email delivery must never block core transactional API flows.

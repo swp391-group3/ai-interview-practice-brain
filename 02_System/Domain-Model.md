@@ -38,9 +38,6 @@ classDiagram
     class RecruiterProfile {
         +UUID id
         +String company_name
-        +String business_tax_code
-        +String company_website
-        +String logo_url
     }
 
     class TargetJD {
@@ -124,10 +121,11 @@ classDiagram
         +AvatarStatus status
     }
 
-    class CreditAccount {
+    class MembershipSubscription {
         +UUID id
-        +Integer balance
-        +Timestamp updated_at
+        +MembershipStatus status
+        +Timestamp started_at
+        +Timestamp expires_at
     }
 
     class PaymentTransaction {
@@ -136,21 +134,14 @@ classDiagram
         +Decimal amount
         +String currency
         +PaymentStatus status
-    }
-
-    class RefundRequest {
-        +UUID id
-        +String reason
-        +String proof_url
-        +RefundStatus status
+        +Timestamp created_at
     }
 
     %% Relationships
     UserAccount "1" -- "0..1" CandidateProfile : profile
     UserAccount "1" -- "0..1" RecruiterProfile : profile
-    UserAccount "1" -- "1" CreditAccount : owns
+    UserAccount "1" -- "0..1" MembershipSubscription : owns
     UserAccount "1" -- "0..*" PaymentTransaction : initiates
-    PaymentTransaction "1" -- "0..1" RefundRequest : disputes
 
     CandidateProfile "1" -- "0..*" TargetJD : owns
     CandidateProfile "1" -- "0..*" PersonalAvatar : owns
@@ -165,7 +156,6 @@ classDiagram
     JobPosting "1" -- "0..*" Application : receives
 
     VoiceProfile "1" -- "0..*" InterviewSession : voices
-    PersonalAvatar "0..1" -- "0..*" InterviewSession : visually_renders
 ```
 
 ---
@@ -175,7 +165,7 @@ classDiagram
 ### 2.1. Identity & Profiles
 * **`UserAccount`:** Root authentication record. Holds system role (`Candidate`, `Recruiter`, `Admin`) and status (`ACTIVE`, `LOCKED`).
 * **`CandidateProfile`:** Profile metadata specific to candidates, containing personal background and default resume links.
-* **`RecruiterProfile`:** Employer metadata attached to a Recruiter account. Stores business tax code and company branding. *Note:* Does not establish a multi-tenant tenant boundary; it is relational profile metadata.
+* **`RecruiterProfile`:** Employer identity metadata attached to a Recruiter account. Stores basic company identification. *Note:* Recruiter manages Job Postings directly. There is no multi-tenant company hierarchy, tenant workspace, or tenant isolation middleware.
 
 ### 2.2. Practice & Simulation Pipeline
 * **`TargetJD`:** The candidate's personal practice JD. Stores the original raw text, the AI-extracted requirements, and the candidate's natural-language `refinement_notes`.
@@ -193,9 +183,8 @@ classDiagram
 
 ### 2.4. Audio-Visual Presentation
 * **`VoiceProfile`:** Voice configuration sourced from external TTS providers. Curated and managed by Administrators.
-* **`PersonalAvatar`:** 3D humanoid avatar generated from candidate portrait photo (Avaturn feasibility). Owned by the Candidate.
+* **`PersonalAvatar`:** 3D humanoid avatar generated from candidate portrait photo (feasibility demonstrated via Avaturn spike). Stored in the Candidate's profile library.
 
-### 2.5. Billing & Monetization
-* **`CreditAccount`:** Tracks practice credit balance for candidates.
-* **`PaymentTransaction`:** Immutable ledger of payment orders and outcomes.
-* **`RefundRequest`:** Dispute record submitted by candidates for technical session failures, adjudicated by Administrators.
+### 2.5. Membership & Payments
+* **`MembershipSubscription`:** Tracks candidate membership status and entitlement period.
+* **`PaymentTransaction`:** Immutable ledger of payment orders, amounts, and gateway outcomes.

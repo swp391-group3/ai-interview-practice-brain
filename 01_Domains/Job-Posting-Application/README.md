@@ -26,13 +26,12 @@ Bridge the gap between technical interview preparation and actual career discove
 ## 2. Core Concepts
 
 * **Job Posting (`job_postings`):** A formal job vacancy published by a Recruiter representing an employer opening.
-  * **Canonical Equivalence:** `Job Posting` **is** the company's Job Description. There is no separate "Corporate JD" concept in RoleCue.
-  * Attributes: Title, Seniority, Description, Required Technologies, Location, Employment Type, Status (`DRAFT`, `ACTIVE`, `ARCHIVED`).
+  * **Canonical Equivalence:** `Job Posting` **is** the company's Job Description. There is no separate "Corporate JD" entity in RoleCue.
+  * Attributes: Title, Seniority, Description, Required Technologies, Location, Employment Type, Status (`ACTIVE`, `ARCHIVED`).
 * **Application (`applications`):** A candidate's formal submission to an active Job Posting.
   * Attributes: Candidate ID, Posting ID, Resume Reference/URL, Cover Note, Submission Timestamp, Status.
   * **Status Lifecycle:** Strictly binary:
     $$\text{PENDING} \longrightarrow \text{APPROVED} \quad \text{or} \quad \text{REJECTED}$$
-* **Company Profile (Recruiter Metadata):** Basic employer branding associated with a Recruiter (Company Name, Business Tax Code, Website, Logo, Corporate Bio).
 
 ---
 
@@ -40,7 +39,8 @@ Bridge the gap between technical interview preparation and actual career discove
 
 * **Recruiter:**
   * Creates, edits, and archives own Job Postings.
-  * Searches and views own Job Postings.
+  * Views own Job Postings.
+  * Searches and filters own Job Postings.
   * Searches and filters received Applications for own postings.
   * Views Application details and attached candidate profiles.
   * Renders a definitive decision: **Approve** or **Reject**.
@@ -49,6 +49,9 @@ Bridge the gap between technical interview preparation and actual career discove
   * Views Job Posting details.
   * Submits an Application.
   * Views own submitted Applications and tracks status updates.
+* **Administrator:**
+  * Views and filters Job Postings across the platform.
+  * Approves or rejects Job Postings for platform governance.
 
 ---
 
@@ -97,7 +100,7 @@ sequenceDiagram
 1. **Non-ATS Boundary (Scope Termination):**
    * Recruitment scope strictly terminates at **Application Approve / Reject**.
    * RoleCue does **NOT** model or support:
-     * Multi-stage recruitment pipelines (e.g., Phone Screen $\rightarrow$ Tech Interview $\rightarrow$ Culture Fit $\rightarrow$ Executive).
+     * Multi-stage recruitment pipelines (e.g., Phone Screen $\rightarrow$ Tech Interview $\rightarrow$ Culture Fit).
      * Interview panel scheduling or calendar synchronization.
      * Candidate ranking algorithms or automated resume scoring.
      * Offer letter generation, compensation negotiation, or digital signature.
@@ -107,15 +110,18 @@ sequenceDiagram
    * Do not create or introduce a separate "Corporate JD" entity or database table.
 3. **No Multi-Tenant Company Architecture:**
    * RoleCue does **NOT** implement multi-tenant SaaS architecture.
-   * There are no Company tenants, no company membership hierarchies, no tenant isolation middleware, no Row-Level Security (RLS) tenant policies, and no schema-per-tenant isolation.
-   * Job Postings are owned directly by the authoring `recruiter_id`.
-4. **Access Control & Privacy:**
+   * There are no Company tenants, no company workspaces, no company membership hierarchies, no tenant isolation middleware, no Row-Level Security (RLS) tenant policies, and no schema-per-tenant isolation.
+   * Job Postings are owned and managed directly by the authoring `recruiter_id`.
+4. **No Recruiter Subscriptions or Corporate Billing:**
+   * Recruiter features do not include subscription plans, corporate invoicing, VAT invoices, or payment tiers.
+   * Basic recruiter identity metadata exists as ordinary profile data.
+5. **Access Control & Privacy:**
    * Candidates can **only** browse active public Job Postings and view their own submitted applications.
    * Recruiters can **only** view and modify Job Postings they personally created.
    * Recruiters can **only** view applications submitted specifically to their own Job Postings.
-5. **Application Status Immutability:**
+6. **Application Status Immutability:**
    * Once an application moves to `APPROVED` or `REJECTED`, the decision is final and cannot be reverted back to `PENDING`.
-6. **Archived Posting Behavior:**
+7. **Archived Posting Behavior:**
    * When a Recruiter archives a Job Posting, it is removed from candidate search and discovery. Candidates with existing applications can still view their application status.
 
 ---
@@ -126,8 +132,8 @@ sequenceDiagram
   Authenticates Candidates and Recruiters. Enforces role boundaries on job board operations.
 * **[[01_Domains/Job-Description/README|Job-Description Domain]]:**
   A Candidate browsing a Job Posting may copy its requirements to create a private **Target JD for Practice** in their personal library. However, the Job Posting and Target JD remain completely decoupled entities.
-* **[[01_Domains/Payment/README|Payment Domain]]:**
-  Recruiters may be required to maintain an active Recruiter Membership / Subscription tier to publish active Job Postings beyond free allowance thresholds.
+* **[[01_Domains/Administration/README|Administration Domain]]:**
+  Administrators view, filter, and approve or reject Job Postings to ensure platform content quality.
 
 ---
 

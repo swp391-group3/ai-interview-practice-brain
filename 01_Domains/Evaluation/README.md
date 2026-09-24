@@ -48,8 +48,8 @@ Provide objective, diagnostic technical feedback to Candidates. Identifies speci
 
 ## 3. Actors Involved
 
-* **Candidate:** Views evaluation reports, reviews turn-by-turn model answers, inspects radar charts, and follows personalized study recommendations.
-* **Administrator:** Configures evaluation rubric templates, scoring weights, and LLM grading prompt instructions.
+* **Candidate:** Views interview history, reviews performance reports, inspects 5-competency radar visualizations and scores, reviews turn-by-turn critiques and model answers, follows personalized study recommendations, and exports results.
+* **Administrator:** Edits evaluation criteria, rubric templates, and scoring weights; manages AI evaluation prompts.
 
 ---
 

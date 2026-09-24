@@ -19,7 +19,7 @@ This document records the ratified, long-lived product decisions that govern the
 ## 1. Blueprint is Internal & Hidden from Candidate
 * **Decision:** The Interview Blueprint is a first-class **internal** domain concept that is strictly hidden from the Candidate.
 * **Rationale:** Exposing the blueprint (with its question slots, expected technical benchmarks, and grading criteria) would turn the mock interview into an artificial "memorize-the-rubric" exercise rather than an authentic, adaptive simulation. The Candidate experiences the interview naturally through spoken dialogue.
-* **Rule:** Candidates never view, edit, or directly confirm an Interview Blueprint.
+* **Rule:** Candidates never view, edit, or directly confirm an Interview Blueprint. There is no blueprint preview capability.
 
 ---
 
@@ -62,7 +62,10 @@ This document records the ratified, long-lived product decisions that govern the
 ## 7. Personal 3D Avatar from Photo is Accepted Scope
 * **Decision:** Generating a personal 3D avatar from a single candidate portrait photograph is an accepted product capability.
 * **Rationale:** Technical feasibility was conclusively demonstrated during the **Avaturn** integration spike, which proved that single-image reconstruction can yield rigged 3D humanoid meshes compatible with WebGL.
-* **Rule:** Treat photo-to-avatar generation as accepted product scope; do not describe it as speculative or failed.
+* **Rule:** Treat photo-to-avatar generation as accepted product scope; do not describe it as speculative or failed. However:
+  * Do not introduce Avaturn as a mandatory external system boundary.
+  * Do not invent a 3D marketplace or trading systems.
+  * Do not state that a personal avatar is automatically used as the AI interviewer unless explicitly established.
 
 ---
 
@@ -75,7 +78,7 @@ This document records the ratified, long-lived product decisions that govern the
 
 ## 9. No Multi-Tenancy Architecture
 * **Decision:** RoleCue operates on a single relational schema without multi-tenant architecture.
-* **Rationale:** The platform does not require complex multi-tenant isolation (no tenant subdomains, tenant connection pools, tenant middleware, schema-per-tenant, or PostgreSQL Row-Level Security). Recruiter accounts link to company profile metadata via standard foreign keys.
+* **Rationale:** The platform does not require complex multi-tenant isolation (no tenant subdomains, tenant connection pools, tenant middleware, schema-per-tenant, or PostgreSQL Row-Level Security). Recruiter accounts manage Job Postings directly.
 * **Rule:** Avoid multi-tenant complexity; use straightforward relational associations.
 
 ---
@@ -84,3 +87,24 @@ This document records the ratified, long-lived product decisions that govern the
 * **Decision:** 3D avatar marketplace, trading, and community model publishing are strictly excluded from the product.
 * **Rationale:** A 3D asset marketplace introduces asset moderation, copyright liability, 3D mesh security scanning, and creator payout systems that fall outside RoleCue's core mission.
 * **Rule:** Avatars are restricted to curated platform presets and candidate-generated personal avatars.
+
+---
+
+## 11. Guest Capabilities Strictly Limited to Landing & Registration
+* **Decision:** Guest capabilities are strictly limited to viewing the landing page and registering for an account.
+* **Rationale:** Speculative public features (such as pricing plan exploration, public 3D avatar hero teasers, or anonymous 2-question voice demos) are excluded from the canonical scope to avoid unauthorized capability creep and unnecessary attack surfaces.
+* **Rule:** Guests can only View Landing Page and Register.
+
+---
+
+## 12. Membership Subscriptions and Transactions Only (No Practice Credits or Refund Queues)
+* **Decision:** Platform monetization is structured exclusively around Candidate Membership Subscriptions and recorded Payment Transactions.
+* **Rationale:** Concepts such as candidate practice credit balances, credit packages, per-interview credit deductions, corporate recruiter tiers, VAT invoices, and administrative refund dispute queues are explicitly removed from scope.
+* **Rule:** Candidate access is governed by membership status; Admin oversees payment transactions, generates revenue reports, and updates membership prices.
+
+---
+
+## 13. Recruiter Scope Bounded to Direct Job Postings & Applications
+* **Decision:** Recruiter capabilities are strictly bounded to creating, updating, archiving, and viewing own Job Postings, and reviewing applications to a binary Approve/Reject decision.
+* **Rationale:** Introducing company branding management, Business Tax Code verification, or recruiter subscription tiers adds unsupported complexity. Recruiter identity exists as basic profile metadata.
+* **Rule:** Job Posting is the company's JD; recruitment stops at application Approve / Reject.

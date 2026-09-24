@@ -22,17 +22,17 @@ This document details the primary end-to-end user workflows within RoleCue:
 
 ## Flow A: Candidate Practice Flow
 
-The Candidate Practice Flow is the central value engine of RoleCue. It takes a raw job description and guides the candidate through structured requirement refinement, configuration, hidden blueprint generation, real-time 3D simulation, and comprehensive diagnostic evaluation.
+The Candidate Practice Flow is the central value engine of RoleCue. It takes a raw target job description and guides the candidate through structured requirement review and refinement, composite configuration, internal blueprint generation, real-time 3D simulation, and comprehensive diagnostic evaluation.
 
 ```mermaid
 flowchart TD
     A["Raw Target JD<br/>(Text input or PDF upload)"] --> B["AI Competency Extraction<br/>(Languages, Frameworks, DBs, Seniority)"]
-    B --> C["Candidate Reviews Extracted JD<br/>(Edit titles, toggle tags)"]
+    B --> C["Candidate Reviews Extracted JD<br/>(Inspect titles, tags, and categories)"]
     C --> D["Candidate Refinement Notes<br/>(e.g., 'Exclude C#', 'Focus on Kafka')"]
     D --> E["Candidate Approves Extracted JD"]
     E --> F["Configure Interview Session<br/>(Interviewer, Voice, Environment, Difficulty, Time)"]
     F --> G["System Generates Interview Blueprint<br/>(Assessment Plan — HIDDEN from Candidate)"]
-    G --> H["Live 3D Virtual Interview Simulation<br/>(Speech STT/TTS, 15 Visemes, Adaptive Probing)"]
+    G --> H["Live 3D Virtual Interview Simulation<br/>(Speech STT/TTS, Blend-Shape Lip-Sync, Adaptive Probing)"]
     H --> I["Multi-Dimensional Evaluation Report<br/>(5 Competencies, Radar Chart, Learning Roadmap)"]
 
     classDef hidden fill:#f9f0ff,stroke:#7950f2,stroke-width:2px,stroke-dasharray: 5 5;
@@ -42,8 +42,8 @@ flowchart TD
 ### Step-by-Step Breakdown
 
 #### 1. Ingestion & Preprocessing
-* The Candidate provides a target Job Description by either pasting raw text (100–20,000 characters) or uploading a multi-page PDF document ($\le$ 10 MB).
-* If a PDF is uploaded, text is sanitized, multi-page content concatenated in natural reading order, and character encodings normalized into clean UTF-8.
+* The Candidate provides a target Job Description by either pasting raw text or uploading a PDF document.
+* If a PDF is uploaded, text is extracted in natural reading order and character encodings are normalized into clean UTF-8.
 
 #### 2. AI Competency Extraction & Deterministic Validation
 * The normalized text is parsed by an LLM via structured extraction prompts.
@@ -60,37 +60,37 @@ flowchart TD
   * Adjust the job title or seniority badge.
   * Add missing technologies or remove irrelevant tags.
   * Enter **Natural-Language Refinement Notes** in a dedicated instruction field (e.g., *"Exclude C# from the interview"*, *"Focus heavily on system architecture and distributed caching"*, *"Candidate has 2 years of Go experience"*).
-* The Candidate submits approval of the refined requirements.
+* The Candidate approves the finalized requirements.
 
 #### 4. Configure Interview Session
 * The Candidate configures the execution parameters in a single composite configuration step:
-  * **Interviewer Persona:** Visual appearance preset (or Candidate's personal 3D avatar).
-  * **Voice Profile:** Selected TTS voice profile (tone, accent, gender).
-  * **Interview Environment:** 3D virtual room background (e.g., Modern Tech Office, Boardroom, Minimalist Studio).
+  * **Interviewer Persona:** Visual appearance choice for the 3D interviewer.
+  * **Voice Profile:** Voice profile choice (tone, accent, gender) sourced from TTS providers.
+  * **Interview Environment:** 3D virtual room background choice.
   * **Difficulty:** `easy`, `medium`, or `hard` (independent of JD seniority).
-  * **Session Length & Question Count:** Planned duration (e.g., 30, 45, 60 minutes) and question budget.
+  * **Session Length & Question Budget:** Planned duration (e.g., 30, 45, 60 minutes) and question budget.
 
 #### 5. Autonomous Blueprint Generation (INTERNAL & HIDDEN)
-* The system combines:
+* The system generates the assessment plan by combining:
   $$\text{Interview Blueprint} = \text{Approved Extracted JD} + \text{Candidate Refinement Notes} + \text{Interview Configuration}$$
 * An internal AI semantic planner builds the **Interview Blueprint**:
   * Topic and competency coverage matrix.
   * Question slots with target difficulty and depth milestones.
   * Expected technical benchmarks and grading rubrics.
 * > [!IMPORTANT]
-  > **The Blueprint is strictly INTERNAL.** The candidate **never sees, edits, or approves the Blueprint directly**. It serves as an immutable operational guide for the interview engine.
+  > **The Blueprint is strictly INTERNAL and HIDDEN.** The Candidate **never views, edits, or confirms the Blueprint**. It serves as an immutable internal plan for the interview engine.
 
 #### 6. Live Virtual Interview Simulation
-* The Candidate enters the 3D interview room after completing an automated audio/mic preflight check.
+* The Candidate checks device readiness (microphone and audio preflight) and enters the interview room.
 * The session initializes an immutable `blueprint_snapshot` to freeze evaluation criteria.
-* The simulation executes via low-latency WebSocket communication:
-  1. The AI interviewer delivers a technical question.
-  2. Spoken audio plays while the 3D avatar's mouth articulates in real-time using 15 Oculus visemes.
+* The simulation executes via real-time streaming communication:
+  1. The AI interviewer delivers a technical question according to the blueprint.
+  2. Spoken audio plays while the 3D avatar's mouth articulates in synchronization using blend-shape visemes.
   3. The Candidate responds via microphone.
   4. Voice Activity Detection (VAD) detects speech boundaries, streaming audio to STT.
   5. The LLM evaluates the candidate's transcript against the active blueprint slot.
   6. The interviewer poses contextual, adaptive follow-up questions if an answer lacks depth, or advances to the next slot if satisfied.
-* If client hardware drops below 20 FPS, the interface gracefully degrades to a 2D animated waveform.
+* If client hardware cannot sustain 3D rendering or lacks WebGL support, the interface gracefully degrades to a 2D animated waveform display without interrupting the voice conversation.
 
 #### 7. Evaluation & Learning Roadmap
 * Upon session completion, the turn transcript is graded against the blueprint rubrics across the **5 Core Competencies**:
@@ -142,9 +142,8 @@ sequenceDiagram
 ### Step-by-Step Breakdown
 
 1. **Job Posting Creation:**
-   * A Recruiter registers with company details (Company Name, Business Tax Code, Branding).
-   * The Recruiter creates a **Job Posting** specifying job title, seniority, description, and required technologies.
-   * *Note:* A Job Posting is the company's job description.
+   * A Recruiter creates a **Job Posting** specifying job title, seniority, description, and required technologies.
+   * *Note:* A Job Posting **is** the company's Job Description. No separate "Corporate JD" entity exists.
 2. **Browsing & Discovery:**
    * Candidates browse and search active public Job Postings by keyword, seniority, or technology.
 3. **Application Submission:**
@@ -158,32 +157,31 @@ sequenceDiagram
    * The Application status transitions to `APPROVED` or `REJECTED`.
    * The Candidate views the updated status in their application history.
 * > [!IMPORTANT]
-  > **Scope Boundary:** Recruitment scope terminates immediately at `Approve / Reject`. RoleCue does not manage interview panels, offer letters, hiring pipelines, or employee onboarding.
+  > **Scope Boundary:** Recruitment scope terminates immediately at `Approve / Reject Application`. RoleCue does not manage interview panels, offer letters, hiring pipelines, or employee onboarding.
 
 ---
 
 ## Flow C: Personal Avatar Generation Flow
 
-To provide high user engagement and elevate 3D presence, RoleCue enables candidates to generate a personal 3D avatar from a single photograph.
+RoleCue supports generating a personal 3D avatar from a single photograph as an accepted product capability. Technical feasibility has been proven via the Avaturn integration spike.
 
 ```mermaid
 flowchart LR
     P["Candidate Portrait Photo<br/>(JPEG / PNG Upload)"] --> VAL["Image Preflight Validation<br/>(Single Face, Lighting Check)"]
-    VAL --> REC["3D Face Reconstruction Engine<br/>(Avaturn Integration Spike)"]
-    REC --> RIG["Standard Rigging & Blend-Shapes<br/>(15 Oculus Visemes Attached)"]
-    RIG --> LIB["Save to Candidate Avatar Library"]
-    LIB --> SEL["Selectable in Interview Configuration"]
+    VAL --> REC["3D Reconstruction Pipeline<br/>(Feasibility Proven via Spike)"]
+    REC --> RIG["Rigged Humanoid Mesh<br/>(Facial Blend-Shapes Attached)"]
+    RIG --> LIB["Save to Candidate Profile Library"]
 ```
 
 ### Step-by-Step Breakdown
 
 1. **Photo Upload:**
-   * The Candidate uploads a clear, front-facing portrait photo (JPEG or PNG, $\le$ 5 MB).
+   * The Candidate uploads a clear, front-facing portrait photo.
 2. **Preflight Validation:**
    * Client-side checks ensure proper aspect ratio, single-face presence, and adequate lighting.
 3. **3D Reconstruction & Synthesis:**
-   * The image is processed by the 3D avatar generation pipeline (proven feasible through the Avaturn integration spike).
-   * The service reconstructs facial mesh geometry, maps skin textures, and attaches a standardized humanoid skeleton with the 15 standard Oculus viseme blend-shapes.
-4. **Library Persistence & Selection:**
-   * The resulting rigged 3D avatar GLB asset is stored and linked to the Candidate's profile.
-   * During the **Configure Interview Session** step in Flow A, the Candidate can select their personal 3D avatar or choose from curated default interviewer personas.
+   * The image is processed by the 3D avatar generation pipeline.
+   * The pipeline reconstructs facial mesh geometry, maps textures, and attaches a standardized humanoid skeleton with facial blend-shapes for animation.
+4. **Library Persistence:**
+   * The resulting rigged 3D avatar asset is stored and linked to the Candidate's profile.
+   * Candidates can view their personal 3D avatar within their profile library.
