@@ -34,14 +34,14 @@ This document records the ratified, long-lived product decisions that govern the
 ## 3. Job Posting is the Recruiter's Company JD
 * **Decision:** The `Job Posting` entity represents the employer's Job Description. A separate "Corporate JD" entity is **not** created.
 * **Rationale:** Introducing both "Corporate JD" and "Job Posting" creates redundant entities and semantic ambiguity. A Recruiter's Job Posting serves as both the public job board opening and the underlying company JD.
-* **Rule:** Maintain single canonical naming: `Job Posting`.
+* **Rule:** Maintain single canonical naming: `Job Posting`. Recruiter creation begins from JD-like content and may use AI-extracted structured information for Recruiter review and confirmation. Before submitting a Job Posting for Admin approval, the Recruiter selects its company 3D interviewer model and Voice Profile. Only approved Job Postings are publicly available.
 
 ---
 
 ## 4. Recruiter Workflow Stops at Application Approve / Reject
 * **Decision:** The recruitment workflow for Recruiters strictly terminates at **Application Approve** or **Reject**.
 * **Rationale:** RoleCue is an interview practice simulator and lightweight career matching board, not a monolithic talent acquisition suite. Modeling multi-stage hiring pipelines, panel scheduling, or onboarding would dilute team focus and explode project complexity.
-* **Rule:** An application has only two terminal states: `APPROVED` or `REJECTED`.
+* **Rule:** An application has only two terminal states: `APPROVED` or `REJECTED`. A Candidate selects Apply, uploads a CV/resume, completes the required Job Posting technical interview, and then RoleCue stores and attaches the Interview Result with Candidate application information and the CV/resume before making the completed Application available to the Recruiter.
 
 ---
 
@@ -53,19 +53,21 @@ This document records the ratified, long-lived product decisions that govern the
 ---
 
 ## 6. Configure Interview Session is a Composite Capability
-* **Decision:** `Configure Interview Session` is modeled as a single composite capability encompassing interviewer persona, voice profile, 3D room environment, difficulty, and question budget.
+* **Decision:** `Configure Interview Session` is modeled as a single composite capability for a Candidate's Target JD practice interview, encompassing an available system 3D interviewer or eligible Candidate-owned personal 3D model, an available Voice Profile, 3D room environment, difficulty, and question budget.
 * **Rationale:** Breaking visual, vocal, environmental, and difficulty settings into separate top-level use cases adds unnecessary administrative overhead. The user configures their session in a cohesive wizard.
-* **Rule:** Interview configuration is a unified setup step, not fragmented use cases.
+* **Rule:** Interview configuration is a unified setup step. An interview originating from a Recruiter Job Posting instead uses that Job Posting's company-defined 3D interviewer model and Voice Profile, which the Candidate cannot override.
 
 ---
 
-## 7. Personal 3D Avatar from Photo is Accepted Scope
-* **Decision:** Generating a personal 3D avatar from a single candidate portrait photograph is an accepted product capability.
-* **Rationale:** Technical feasibility was conclusively demonstrated during the **Avaturn** integration spike, which proved that single-image reconstruction can yield rigged 3D humanoid meshes compatible with WebGL.
-* **Rule:** Treat photo-to-avatar generation as accepted product scope; do not describe it as speculative or failed. However:
-  * Do not introduce Avaturn as a mandatory external system boundary.
+## 7. Personal 3D Avatar Uses Embedded Avaturn and VRM Persistence
+* **Decision:** RoleCue embeds the free Avaturn iframe experience for Personal 3D Avatar creation. The integration is accepted production scope.
+* **Rationale:** Avaturn provides the complete user-facing creation experience, while RoleCue retains the production avatar artifact and Candidate ownership relationship required by the platform.
+* **Rule:**
+  * Avaturn owns capture instructions, three-photo capture, capture validation and retakes, preview generation, accessory/customization UI, and final GLB generation.
+  * RoleCue receives Avaturn's final GLB, converts it to VRM, persists the VRM Personal 3D Avatar, and associates it with the owning Candidate.
+  * RoleCue does not use Avaturn Pro APIs or backend Avaturn API orchestration for those Avaturn-owned steps.
   * Do not invent a 3D marketplace or trading systems.
-  * Do not state that a personal avatar is automatically used as the AI interviewer unless explicitly established.
+  * A personal avatar is selectable only when eligible for a Candidate's Target JD interview; it is not automatically used as the AI interviewer.
 
 ---
 
@@ -108,3 +110,10 @@ This document records the ratified, long-lived product decisions that govern the
 * **Decision:** Recruiter capabilities are strictly bounded to creating, updating, archiving, and viewing own Job Postings, and reviewing applications to a binary Approve/Reject decision.
 * **Rationale:** Introducing company branding management, Business Tax Code verification, or recruiter subscription tiers adds unsupported complexity. Recruiter identity exists as basic profile metadata.
 * **Rule:** Job Posting is the company's JD; recruitment stops at application Approve / Reject.
+
+---
+
+## 14. Runtime Uses a Generic LLM-Determined Question Loop
+* **Decision:** Interview runtime orchestration uses the generic concept `Question`.
+* **Rationale:** The LLM can determine each next Question from the Candidate's Answer and the immutable Interview Context without separate top-level Core Question or follow-up question flows.
+* **Rule:** The system obtains or determines a Question, TTS synthesizes interviewer speech, the 3D interviewer renders it with lip-sync, STT transcribes the Candidate's Answer, and the LLM analyzes the Answer with Interview Context to determine the next Question. The loop continues until no Questions remain, then proceeds to Evaluation. For MVP, there is no separate Decision Layer or decision service.

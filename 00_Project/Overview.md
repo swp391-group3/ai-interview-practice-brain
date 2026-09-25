@@ -25,7 +25,7 @@ Technical interview preparation is critical for career progression in software e
 2. **Limited Availability of Expert Interviewers:**
    Scheduling realistic mock interviews with senior engineers or mentors is prohibitively expensive, difficult to coordinate, and rarely repeatable at scale.
 3. **Absence of Real-Time Conversational Pressure:**
-   Static multiple-choice quizzes and automated code grading do not prepare candidates for live technical dialogue. Candidates struggle to articulate trade-offs, explain system design rationale, and handle spontaneous probing from an interviewer under time constraints.
+   Static multiple-choice quizzes and automated code grading do not prepare candidates for live technical dialogue. Candidates struggle to articulate trade-offs, explain system design rationale, and handle spontaneous interviewer Questions under time constraints.
 4. **Superficial & Non-Actionable Feedback:**
    Existing tools provide binary pass/fail outcomes or generic scores. Candidates are left without insight into their root-cause conceptual gaps, technical depth, problem-solving methodology, or concrete study roadmaps.
 
@@ -37,7 +37,7 @@ RoleCue solves these challenges by combining AI semantic parsing, generative con
 
 * **Targeted Practice:** Practice against the exact Job Description a candidate is targeting.
 * **Realistic Pressure:** Converse face-to-face with an animated 3D virtual interviewer using natural spoken voice.
-* **Intelligent Probing:** Experience adaptive follow-up questioning that pushes candidate answers deeper based on a pre-planned assessment blueprint.
+* **Intelligent Questioning:** Experience an adaptive sequence of Questions determined from each answer and the internal interview context.
 * **Objective Diagnostic Feedback:** Receive immediate, granular scoring across 5 core technical competencies accompanied by turn-by-turn critiques and personalized learning roadmaps.
 
 ---
@@ -48,7 +48,7 @@ RoleCue is designed for four primary user groups:
 
 | Actor | Profile | Primary Motivation |
 | :--- | :--- | :--- |
-| **Candidate** | Software engineers, students, career switchers | Prepare for specific technical job interviews, assess technical readiness, configure and conduct mock interviews, generate a personal 3D avatar from photo, manage membership, and discover matching job postings. |
+| **Candidate** | Software engineers, students, career switchers | Prepare for specific technical job interviews, assess technical readiness, configure and conduct mock interviews, create a personal 3D avatar through Avaturn, manage membership, and discover matching job postings. |
 | **Recruiter** | Tech talent acquisition, hiring managers, company reps | Publish company Job Postings to attract qualified candidates and screen incoming applications. |
 | **Guest** | Unauthenticated visitors, prospective users | View the public landing page and register for an account. |
 | **Administrator** | Platform operators, technical governance | Maintain account security, approve/reject job postings, oversee interview sessions, calibrate AI behavior and evaluation criteria, curate TTS voice profiles, track membership revenue, and update membership prices. |
@@ -78,7 +78,7 @@ flowchart TD
     subgraph Simulation["3. Virtual Simulation"]
         BP1 --> SIM1["3D Virtual Interviewer (WebGL)"]
         SIM1 <--> SIM2["Real-Time Speech Interaction (STT / TTS)"]
-        SIM2 <--> SIM3["Adaptive Technical Probing Engine"]
+        SIM2 <--> SIM3["LLM-Determined Question Loop"]
     end
 
     subgraph Evaluation["4. Multi-Dimensional Evaluation"]
@@ -88,12 +88,12 @@ flowchart TD
     end
 
     subgraph Board["5. Lightweight Job Board"]
-        REC["Recruiter Job Postings"] <--> APP["Candidate Applications"]
+        REC["Approved Recruiter Job Postings"] <--> APP["Candidate Applications<br/>(CV + Interview Result)"]
         APP --> DEC["Approve / Reject Decision"]
     end
 
     subgraph Identity["6. 3D Identity & Membership"]
-        PHOTO["Candidate Photo Upload"] --> AVA["Personal 3D Avatar Generation"]
+        AVATURN["Embedded Avaturn Experience"] --> AVA["RoleCue VRM Personal Avatar"]
         PAY["Candidate Membership Subscription"] --> TRANS["Payment Transactions & Governance"]
     end
 ```
@@ -103,13 +103,13 @@ flowchart TD
 2. **Internal Interview Blueprint Generation:**
    Translates the approved JD, candidate refinement notes, and interview configuration into a comprehensive, structured assessment plan. Specifies topic matrices, question slots, depth thresholds, and rubrics. **The blueprint remains strictly internal and hidden from the candidate.**
 3. **Real-Time 3D Virtual Interview Simulation:**
-   Renders a 3D animated avatar in the browser via WebGL. Delivers questions using realistic TTS with synchronized blend-shape viseme lip-sync. Listens to candidate responses via client-side Voice Activity Detection (VAD) and Speech-to-Text (STT). Dynamically adapts the conversation with follow-ups.
+   Renders a 3D animated avatar in the browser via WebGL. The system obtains the next Question, TTS delivers it with synchronized blend-shape viseme lip-sync, STT transcribes the Candidate's answer, and the LLM uses that Answer with the internal Interview Context to determine the next Question. For MVP, the LLM makes this decision; there is no separate Decision Layer.
 4. **Automated Multi-Dimensional Evaluation:**
    Grades completed sessions across 5 core competencies: *Technical Accuracy*, *Depth of Understanding*, *Problem-Solving*, *Answer Relevance*, and *Communication Clarity*. Generates comprehensive performance reports with radar charts and personalized improvement roadmaps.
 5. **Lightweight Job Posting & Application:**
-   Enables Recruiters to create, update, and archive Job Postings (company JDs). Allows Candidates to browse postings and apply with their profiles. Recruiters search applications and render a final **Approve** or **Reject** decision.
+   Enables Recruiters to create, update, and archive Job Postings (company JDs), select a company 3D interviewer model and Voice Profile, and submit postings for Admin approval. Candidates can browse approved postings, upload a CV/resume, complete the required technical interview using the locked company configuration, and submit an Application containing the resulting Interview Result. Recruiters search applications and render a final **Approve** or **Reject** decision.
 6. **Personal 3D Avatar Generation & Customization:**
-   Supports generating a personalized 3D avatar from a single candidate portrait photograph, with technical feasibility proven through the Avaturn spike. In the composite session configuration, candidates can choose their interviewer persona, voice profile, and 3D environment.
+   RoleCue embeds the free Avaturn iframe experience, where Avaturn handles three-photo capture, validation, preview generation, and customization before returning the final GLB. RoleCue converts that GLB to VRM, persists the Candidate-owned personal avatar, and uses VRM as the production artifact. For Target JD interviews, Candidates can choose an available system 3D interviewer or eligible personal 3D model, an available Voice Profile, and a 3D environment. Job Posting interviews use the company-defined model and Voice Profile without Candidate override.
 
 ---
 

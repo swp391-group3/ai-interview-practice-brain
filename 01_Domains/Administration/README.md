@@ -29,13 +29,13 @@ Empower platform administrators with centralized governance tools to enforce acc
 * **Account Governance:**
   Administrative oversight of Candidate and Recruiter accounts. Supports account search and filtering, along with security locking and unlocking.
 * **Job Posting Governance:**
-  Supervisory review of Job Postings published by Recruiters. Supports viewing, filtering, and approving or rejecting job postings.
+  Supervisory review of Job Postings submitted by Recruiters. Supports viewing, filtering, and approving or rejecting Job Postings; only approved postings become publicly available.
 * **Interview Session Oversight:**
   Supervisory access to interview session records. Enables searching, filtering, and inspecting interview session details.
 * **Interview Feature Configuration:**
   System-wide configuration of interview features, parameter boundaries, and operational toggles.
 * **AI Behaviour Management:**
-  Governance of AI system prompt templates, conversational guidance instructions, and adaptive probing strategies.
+  Governance of AI system prompt templates and conversational Question guidance instructions.
 * **Evaluation Criteria Calibration:**
   Configuration and calibration of evaluation criteria, rubric templates, and scoring weights across the 5 Core Competencies.
 * **Voice Profile Catalog Management:**
@@ -82,6 +82,8 @@ flowchart TD
    Modifications to evaluation criteria, rubrics, or AI behaviour prompts apply to future sessions and must **never** retroactively alter or recalculate completed historical Performance Reports.
 5. **Two-Party Auditability:**
    All administrative actions (locking accounts, approving/rejecting job postings, modifying voice profiles, updating membership prices) are recorded in an immutable audit log.
+6. **Job Posting Publication Gate:**
+   Recruiter Job Postings remain unavailable to Candidates until an Administrator approves them. Admin rejection prevents public availability; Admin does not configure the Job Posting's company 3D interviewer model or Voice Profile.
 
 ---
 
@@ -90,7 +92,7 @@ flowchart TD
 * **[[01_Domains/Auth/README|Auth Domain]]:**
   Executes account locking and unlocking operations.
 * **[[01_Domains/Job-Posting-Application/README|Job-Posting-Application Domain]]:**
-  Enables administrative review, filtering, and approval/rejection of published Job Postings.
+  Enables administrative review, filtering, and approval/rejection of submitted Job Postings.
 * **[[01_Domains/Interview/README|Interview Domain]]:**
   Allows Administrators to search, filter, and inspect interview session details, configure interview features, and govern AI behavior.
 * **[[01_Domains/Avatar-Voice/README|Avatar-Voice Domain]]:**

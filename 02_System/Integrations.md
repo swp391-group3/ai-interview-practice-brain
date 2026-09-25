@@ -22,7 +22,7 @@ This document specifies the integration architecture, operational requirements, 
 ## 1. Architectural Integration Principles
 
 1. **Vendor Agnosticism:**
-   Core domain entities and business workflows must never depend directly on vendor-specific SDKs or proprietary JSON schemas. All external integrations are encapsulated behind internal interface adapters.
+   Core domain entities and business workflows must never depend directly on vendor-specific SDKs or proprietary JSON schemas. Service-provider APIs are encapsulated behind internal interface adapters. The accepted Avaturn integration is a user-facing iframe embed, described separately below; RoleCue does not orchestrate Avaturn through backend APIs.
 2. **Deterministic Pre/Post Validation:**
    Outputs from external AI providers (LLM extractions, STT transcripts) are treated as untrusted data. They must undergo deterministic schema validation and sanitization before entering domain persistence.
 3. **Graceful Fallback:**
@@ -38,6 +38,7 @@ flowchart LR
         JD["JD Ingestion"]
         INT["Interview Engine"]
         EVAL["Evaluation Engine"]
+        AVA["Avatar Asset Conversion"]
         BILL["Membership & Payments"]
     end
 
@@ -55,6 +56,7 @@ flowchart LR
         P_TTS["TTS Provider<br/>(Text-to-Speech & Visemes)"]
         P_PAY["Payment Gateway<br/>(Electronic Checkout & Webhooks)"]
         P_MAIL["Email Provider<br/>(Transactional Mail & Notices)"]
+        P_AVATURN["Avaturn<br/>(Embedded Free Iframe Experience)"]
     end
 
     JD --> A_LLM
@@ -64,6 +66,7 @@ flowchart LR
     EVAL --> A_LLM
     BILL --> A_PAY
     BILL --> A_MAIL
+    P_AVATURN -->|Final GLB| AVA
 
     A_LLM <--> P_LLM
     A_STT <--> P_STT
@@ -71,6 +74,8 @@ flowchart LR
     A_PAY <--> P_PAY
     A_MAIL --> P_MAIL
 ```
+
+The RoleCue browser embeds the free Avaturn iframe directly. Avaturn owns capture instructions, three-photo capture, validation and retakes, preview generation, customization, and final GLB generation. RoleCue receives the final GLB, converts it to VRM, and persists the Candidate-owned VRM asset. This is not an Avaturn Pro subscription, backend Avaturn API integration, or RoleCue-managed reconstruction pipeline.
 
 ---
 
@@ -80,11 +85,11 @@ flowchart LR
 * **Purpose:**
   * **Structured JD Extraction:** Parses unstructured job description text into validated JSON technical competencies (title, seniority, categorized skills, technologies).
   * **Interview Planning:** Autonomously builds the internal, hidden Interview Blueprint from approved requirements, refinement notes, and configuration parameters.
-  * **Adaptive Conversational Probing:** Analyzes candidate speech turns in real time to generate contextual technical follow-up questions or transition between blueprint competency slots.
+  * **Runtime Question Decision:** Analyzes each Candidate Answer with the immutable Interview Context and determines the next runtime Question.
   * **Multi-Dimensional Evaluation:** Evaluates full session transcripts against blueprint rubrics across the 5 Core Competencies.
 * **Fault Handling:**
   * If extraction fails or outputs an invalid schema, the system retries with adjusted parameters; surfaces an extraction failure if unresolvable.
-  * If real-time probing times out during a live turn, the interview engine falls back to pre-budgeted default questions from the blueprint.
+  * If next-Question determination times out during a live turn, the system retries or presents an interview recovery state without introducing a separate Decision Layer or decision service.
 
 ### 3.2. Speech-to-Text (STT) Provider
 * **Purpose:**
@@ -101,7 +106,16 @@ flowchart LR
 * **Fault Handling:**
   If the TTS stream fails, the session can display the question as text while attempting audio reconnection, avoiding an abrupt session abort.
 
-### 3.4. Payment Gateway
+### 3.4. Avaturn Embedded Avatar Experience
+* **Purpose:**
+  Provides the free iframe experience embedded by RoleCue for Personal 3D Avatar creation.
+* **Ownership Boundary:**
+  * Avaturn presents capture instructions, collects the three required photos, performs capture validation and retakes, generates the preview avatar, provides accessory/customization UI, and generates the final GLB.
+  * RoleCue receives the final GLB, converts it to VRM, persists the VRM Personal 3D Avatar, and associates it with the owning Candidate.
+* **Integration Constraint:**
+  RoleCue does not use Avaturn Pro APIs or backend Avaturn API orchestration for capture, customization, or avatar generation.
+
+### 3.5. Payment Gateway
 * **Purpose:**
   Facilitates secure electronic payment processing for candidate membership subscriptions.
 * **Provider Flexibility:**
@@ -111,11 +125,11 @@ flowchart LR
   * Webhook handlers must verify signatures and maintain strictly idempotent processing to prevent duplicate status changes or activations.
   * Subscription activations and transaction state updates must execute within database transactions.
 
-### 3.5. Email Provider
+### 3.6. Email Provider
 * **Purpose:**
   Dispatches transactional system emails:
   * Account registration verification tokens.
-  * Password recovery links.
+  * Forgot Password recovery links.
   * Application submission confirmations and status change notices (Approved/Rejected).
   * Security alerts and account notifications.
 * **Operational Invariants:**

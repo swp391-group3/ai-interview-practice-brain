@@ -49,6 +49,7 @@ Provide objective, diagnostic technical feedback to Candidates. Identifies speci
 ## 3. Actors Involved
 
 * **Candidate:** Views interview history, reviews performance reports, inspects 5-competency radar visualizations and scores, reviews turn-by-turn critiques and model answers, follows personalized study recommendations, and exports results.
+* **Recruiter:** Reviews the Interview Result attached to a completed Application for the Recruiter's own Job Posting.
 * **Administrator:** Edits evaluation criteria, rubric templates, and scoring weights; manages AI evaluation prompts.
 
 ---
@@ -84,7 +85,7 @@ flowchart TD
 3. **Report Immutability:**
    Once generated and persisted, a Performance Report is **immutable**. Historical scores, critiques, and radar values can never be altered or recalculated.
 4. **Candidate Privacy Scoping:**
-   Performance reports are confidential to the candidate. Recruiters have **no access** to individual candidate interview reports or transcripts.
+   Performance reports from Candidate Target JD practice sessions are confidential to the Candidate. For a Job Posting-originated interview, the resulting Performance Report is the Interview Result attached to the completed Application and is available only to the Recruiter who owns that Job Posting. Recruiters have no access to unrelated Candidate reports or transcripts.
 5. **Formative & Diagnostic Purpose:**
    RoleCue evaluations serve as educational feedback tools. RoleCue does **NOT** issue official hiring certifications, pass/fail employment determinations, or applicant rankings.
 

@@ -22,7 +22,7 @@ This document details the primary end-to-end user workflows within RoleCue:
 
 ## Flow A: Candidate Practice Flow
 
-The Candidate Practice Flow is the central value engine of RoleCue. It takes a raw target job description and guides the candidate through structured requirement review and refinement, composite configuration, internal blueprint generation, real-time 3D simulation, and comprehensive diagnostic evaluation.
+The Candidate Practice Flow is the central value engine of RoleCue. It takes a raw target job description and guides the candidate through structured requirement review and refinement, composite configuration, real-time 3D simulation, and comprehensive diagnostic evaluation. The system prepares its hidden Blueprint and immutable execution context internally.
 
 ```mermaid
 flowchart TD
@@ -31,12 +31,9 @@ flowchart TD
     C --> D["Candidate Refinement Notes<br/>(e.g., 'Exclude C#', 'Focus on Kafka')"]
     D --> E["Candidate Approves Extracted JD"]
     E --> F["Configure Interview Session<br/>(Interviewer, Voice, Environment, Difficulty, Time)"]
-    F --> G["System Generates Interview Blueprint<br/>(Assessment Plan — HIDDEN from Candidate)"]
-    G --> H["Live 3D Virtual Interview Simulation<br/>(Speech STT/TTS, Blend-Shape Lip-Sync, Adaptive Probing)"]
+    F --> H["Live 3D Virtual Interview Simulation<br/>(Speech STT/TTS, Blend-Shape Lip-Sync, Adaptive Questions)"]
     H --> I["Multi-Dimensional Evaluation Report<br/>(5 Competencies, Radar Chart, Learning Roadmap)"]
 
-    classDef hidden fill:#f9f0ff,stroke:#7950f2,stroke-width:2px,stroke-dasharray: 5 5;
-    class G hidden;
 ```
 
 ### Step-by-Step Breakdown
@@ -81,15 +78,16 @@ flowchart TD
   > **The Blueprint is strictly INTERNAL and HIDDEN.** The Candidate **never views, edits, or confirms the Blueprint**. It serves as an immutable internal plan for the interview engine.
 
 #### 6. Live Virtual Interview Simulation
-* The Candidate checks device readiness (microphone and audio preflight) and enters the interview room.
+* The Candidate completes **Test Audio and Interview Readiness** (microphone and audio) and enters the interview room.
 * The session initializes an immutable `blueprint_snapshot` to freeze evaluation criteria.
 * The simulation executes via real-time streaming communication:
-  1. The AI interviewer delivers a technical question according to the blueprint.
-  2. Spoken audio plays while the 3D avatar's mouth articulates in synchronization using blend-shape visemes.
-  3. The Candidate responds via microphone.
-  4. Voice Activity Detection (VAD) detects speech boundaries, streaming audio to STT.
-  5. The LLM evaluates the candidate's transcript against the active blueprint slot.
-  6. The interviewer poses contextual, adaptive follow-up questions if an answer lacks depth, or advances to the next slot if satisfied.
+  1. The system obtains or determines the next **Question** using the immutable Interview Context.
+  2. TTS synthesizes the interviewer's speech, and the 3D interviewer renders it with lip-sync.
+  3. The Candidate answers by voice; Voice Activity Detection (VAD) detects speech boundaries and sends the audio to STT.
+  4. STT transcribes the Candidate's speech.
+  5. The LLM receives the Answer and Interview Context, analyzes the answer, and determines the next **Question**.
+  6. The loop repeats while Questions remain; otherwise the session proceeds to Evaluation.
+* For MVP, the LLM performs the next-Question decision. There is no separate Decision Layer.
 * If client hardware cannot sustain 3D rendering or lacks WebGL support, the interface gracefully degrades to a 2D animated waveform display without interrupting the voice conversation.
 
 #### 7. Evaluation & Learning Roadmap
@@ -112,43 +110,62 @@ sequenceDiagram
     autonumber
     actor Recruiter
     actor Candidate
+    actor Admin
     participant System as RoleCue Platform
     participant DB as Platform Storage
 
-    Recruiter->>System: Create Job Posting (Title, Requirements, Tech Stack)
-    System->>DB: Persist Job Posting (Status: Active)
-    
-    Candidate->>System: Browse & Search Active Job Postings
-    System-->>Candidate: Display Matching Postings
-    Candidate->>System: View Job Posting Details
-    Candidate->>System: Submit Application (Profile + Resume Reference)
-    System->>DB: Create Application (Status: PENDING)
-    System-->>Recruiter: Notify of New Application
-    
-    Recruiter->>System: Search & Filter Applications for Posting
-    Recruiter->>System: View Candidate Application Details
-    
-    alt Recruiter Approves
-        Recruiter->>System: Approve Application
-        System->>DB: Update Application (Status: APPROVED)
-        System-->>Candidate: Notify Application Approved
-    else Recruiter Rejects
-        Recruiter->>System: Reject Application
-        System->>DB: Update Application (Status: REJECTED)
-        System-->>Candidate: Notify Application Rejected
+    Recruiter->>System: Create Job Posting from JD-like content
+    System->>System: Optionally extract structured job information for Recruiter review
+    Recruiter->>System: Confirm content; select company 3D interviewer model and Voice Profile
+    Recruiter->>System: Submit Job Posting for approval
+    System->>DB: Persist Job Posting (Pending Admin Approval)
+    Admin->>System: Approve or Reject Job Posting
+    alt Admin approves
+        System->>DB: Mark Job Posting approved and publicly available
+    else Admin rejects
+        System->>DB: Mark Job Posting rejected
+    end
+
+    opt Job Posting is approved
+        Candidate->>System: Browse & Search Approved Job Postings
+        System-->>Candidate: Display Matching Postings
+        Candidate->>System: View Job Posting Details and select Apply
+        Candidate->>System: Upload CV/resume
+        Candidate->>System: Complete required technical interview
+        Note over Candidate,System: Company 3D interviewer model and Voice Profile are locked
+        System->>DB: Store Interview Result associated with Job Posting
+        System->>DB: Attach Interview Result and CV/resume to completed Application
+        System-->>Recruiter: Make completed Application available
+        System-->>Candidate: Confirm successful submission
+
+        Recruiter->>System: Search & Filter Applications for Posting
+        Recruiter->>System: View candidate application, CV/resume, and Interview Result
+
+        alt Recruiter Approves
+            Recruiter->>System: Approve Application
+            System->>DB: Update Application (Status: APPROVED)
+            System-->>Candidate: Notify Application Approved
+        else Recruiter Rejects
+            Recruiter->>System: Reject Application
+            System->>DB: Update Application (Status: REJECTED)
+            System-->>Candidate: Notify Application Rejected
+        end
     end
 ```
 
 ### Step-by-Step Breakdown
 
 1. **Job Posting Creation:**
-   * A Recruiter creates a **Job Posting** specifying job title, seniority, description, and required technologies.
+   * A Recruiter creates a **Job Posting** from JD-like content, specifying job title, seniority, description, and required technologies. RoleCue may extract structured information for Recruiter review and confirmation.
    * *Note:* A Job Posting **is** the company's Job Description. No separate "Corporate JD" entity exists.
+   * Before submission for approval, the Recruiter selects the company 3D interviewer model and Voice Profile for interviews originating from the Job Posting.
+   * An Administrator approves or rejects the submission. Only an approved Job Posting is publicly available.
 2. **Browsing & Discovery:**
-   * Candidates browse and search active public Job Postings by keyword, seniority, or technology.
+   * Candidates browse and search approved public Job Postings by keyword, seniority, or technology.
 3. **Application Submission:**
-   * The Candidate views details of an active Job Posting and clicks **Apply**.
-   * The system submits an **Application** attaching the candidate's contact details, profile, and resume link. The status is initialized to `PENDING`.
+   * The Candidate views details of an approved Job Posting and clicks **Apply**.
+   * The Candidate uploads a CV/resume and completes the required technical interview using the Job Posting's company-defined 3D interviewer model and Voice Profile; these settings cannot be overridden.
+   * The system stores the Interview Result, attaches it to the Application with the candidate application information and CV/resume, then makes the completed Application available to the Recruiter and confirms submission.
 4. **Recruiter Review:**
    * The Recruiter accesses their dashboard to view incoming applications filtered by posting.
    * The Recruiter views the application details and candidate profile.
@@ -163,25 +180,27 @@ sequenceDiagram
 
 ## Flow C: Personal Avatar Generation Flow
 
-RoleCue supports generating a personal 3D avatar from a single photograph as an accepted product capability. Technical feasibility has been proven via the Avaturn integration spike.
+RoleCue supports personal 3D avatar generation through an embedded free Avaturn iframe experience. Avaturn owns capture, validation, customization, and final GLB generation; RoleCue converts and persists the final production VRM asset.
 
 ```mermaid
 flowchart LR
-    P["Candidate Portrait Photo<br/>(JPEG / PNG Upload)"] --> VAL["Image Preflight Validation<br/>(Single Face, Lighting Check)"]
-    VAL --> REC["3D Reconstruction Pipeline<br/>(Feasibility Proven via Spike)"]
-    REC --> RIG["Rigged Humanoid Mesh<br/>(Facial Blend-Shapes Attached)"]
-    RIG --> LIB["Save to Candidate Profile Library"]
+    START["Candidate opens Personal 3D Avatar Generator in RoleCue"] --> IFRAME["Embedded free Avaturn iframe experience"]
+    IFRAME --> CAPTURE["Avaturn capture instructions and 3 required photos"]
+    CAPTURE --> VALIDATE["Avaturn validation and retake workflow"]
+    VALIDATE --> PREVIEW["Avaturn preview avatar and customization UI"]
+    PREVIEW --> GLB["Avaturn final GLB"]
+    GLB --> CONVERT["RoleCue receives GLB and converts it to VRM"]
+    CONVERT --> LIB["Persist VRM Personal 3D Avatar for Candidate"]
 ```
 
 ### Step-by-Step Breakdown
 
-1. **Photo Upload:**
-   * The Candidate uploads a clear, front-facing portrait photo.
-2. **Preflight Validation:**
-   * Client-side checks ensure proper aspect ratio, single-face presence, and adequate lighting.
-3. **3D Reconstruction & Synthesis:**
-   * The image is processed by the 3D avatar generation pipeline.
-   * The pipeline reconstructs facial mesh geometry, maps textures, and attaches a standardized humanoid skeleton with facial blend-shapes for animation.
-4. **Library Persistence:**
-   * The resulting rigged 3D avatar asset is stored and linked to the Candidate's profile.
-   * Candidates can view their personal 3D avatar within their profile library.
+1. **Embedded Generator:**
+   * The Candidate accesses the Personal 3D Avatar Generator from RoleCue, which embeds the free Avaturn iframe experience.
+2. **Avaturn Capture and Customization:**
+   * Avaturn presents capture instructions, collects the three required photos, performs validation and any retake workflow, generates the preview, and provides the accessory and customization interface.
+3. **Final Asset Handoff:**
+   * Avaturn generates the final GLB and RoleCue receives it. RoleCue does not orchestrate Avaturn capture, customization, or generation through Avaturn Pro APIs.
+4. **RoleCue Conversion and Persistence:**
+   * RoleCue converts the received GLB to VRM, persists the VRM Personal 3D Avatar, and associates it with the owning Candidate.
+   * Candidates can view their personal VRM avatar within their profile library.

@@ -42,9 +42,10 @@ This repository is intentionally maintained as a **durable domain knowledge base
 * **AI-based JD Extraction & Refinement:** Ingestion of text or PDF job descriptions, deterministic validation of technical competencies, and natural-language candidate refinement.
 * **Internal Interview Blueprint Generation:** Autonomous generation of comprehensive assessment plans hidden from the candidate.
 * **Real-Time 3D Virtual Interviewer:** Interactive WebGL avatar with real-time speech-to-text (STT), text-to-speech (TTS), and synchronized blend-shape viseme lip-sync.
-* **Adaptive Technical Probing:** Dynamic conversational dialogue that dives deeper based on candidate answers and blueprint criteria.
+* **Adaptive Technical Questioning:** An LLM-determined Question loop that uses each Candidate Answer and immutable Interview Context.
 * **Post-Interview Evaluation:** Automated multi-dimensional scoring across 5 core competencies with actionable gap analysis.
-* **Lightweight Job Posting & Application:** A streamlined recruiter board allowing candidate applications, bounded strictly at Application Approve/Reject.
+* **Lightweight Job Posting & Application:** A Recruiter company-JD board with Admin approval, locked company interview presentation, and completed Applications containing CV/resume and the associated Interview Result; recruitment remains bounded at Application Approve/Reject.
+* **Personal 3D Avatar:** An embedded free Avaturn iframe experience whose final GLB is converted by RoleCue to a persisted Candidate-owned VRM avatar.
 
 ---
 

@@ -27,7 +27,7 @@ Provide secure, reliable identity verification and authorization for all users. 
 * **User Account (`accounts`):** The foundational identity record containing unique email, secure password hash, display name, account status, and assigned system role.
 * **System Roles:**
   * `Candidate`: Job seekers who practice interviews and apply to job postings.
-  * `Recruiter`: Hiring representatives who publish job postings and review applications.
+  * `Recruiter`: Hiring representatives who create Job Postings and review applications.
   * `Admin`: Privileged operators who govern platform accounts, job postings, sessions, voice profiles, and pricing.
 * **Account Status:**
   * `UNVERIFIED`: Account registered; pending email confirmation.
@@ -47,8 +47,7 @@ Provide secure, reliable identity verification and authorization for all users. 
   * Edit Own Profile
   * Log in
   * Log out
-  * Forgot Password
-  * Reset Password
+  * Forgot Password (including password-reset behavior)
   * Change Password
   * Enable 2-Factor Authentication
 * **Administrator:** Views and filters user accounts; locks/unlocks accounts for security governance.
@@ -95,6 +94,7 @@ sequenceDiagram
 4. **Email Uniqueness:** Email addresses are normalized to lowercase and must be strictly unique across all accounts.
 5. **No Anonymous Privilege Escalation:** Guests have zero access to authenticated candidate, recruiter, or admin operations.
 6. **Role Isolation:** A Candidate cannot access Recruiter management endpoints; a Recruiter cannot access Candidate practice resources or submit mock interview configurations without an authorized Candidate account.
+7. **Password Recovery:** `Forgot Password` is the single password-recovery capability. It includes issuing and validating a recovery link or token and setting a replacement password; `Reset Password` is not a separate formal capability. `Change Password` remains the authenticated-user capability for replacing a known password.
 
 ---
 

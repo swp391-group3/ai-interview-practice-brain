@@ -14,6 +14,8 @@ aliases:
 
 This document defines the actors of the RoleCue platform and establishes their canonical capability boundaries according to the finalized product scope.
 
+The formal use-case model contains **57** use cases. This Brain records their durable capability boundaries without assigning use-case numbers.
+
 ---
 
 ## 1. Actor Catalog & Hierarchy
@@ -29,7 +31,6 @@ classDiagram
         +login()
         +logout()
         +forgotPassword()
-        +resetPassword()
         +changePassword()
         +enable2FactorAuth()
     }
@@ -106,8 +107,7 @@ classDiagram
   * Edit Own Profile
   * Log in
   * Log out
-  * Forgot Password
-  * Reset Password
+  * Forgot Password (including password-reset behavior)
   * Change Password
   * Enable 2-Factor Authentication
 
@@ -117,25 +117,26 @@ classDiagram
   * **Target JD for Practice Management:** Upload or paste target job descriptions (text or PDF) for personal practice.
   * **AI-Extracted JD Review:** Inspect and modify structured technical competencies extracted by AI.
   * **Refinement Notes:** Enter natural-language instructions (e.g., *"Exclude C# from the interview"*) before blueprint compilation.
-  * **Interview Configuration:** Configure composite session parameters (interviewer persona, voice profile, 3D environment, difficulty, duration).
-  * **Interview Session Lifecycle:** Create, check readiness (preflight), join, pause, and resume interview sessions.
-  * **Spoken Interaction with 3D AI Interviewer:** Conduct real-time voice conversation with speech-synchronized 3D interviewer animation and adaptive probing.
+  * **Interview Configuration:** For a Target JD interview, choose an available system 3D interviewer or eligible Candidate-owned personal 3D model, an available Voice Profile, 3D environment, difficulty, and duration. For a Job Posting interview, the Job Posting's company-defined 3D interviewer model and Voice Profile apply and cannot be overridden.
+  * **Interview Session Lifecycle:** Create, test audio and interview readiness, join, pause, and resume interview sessions.
+  * **Spoken Interaction with 3D AI Interviewer:** Conduct real-time voice conversation with speech-synchronized 3D interviewer animation and LLM-determined Questions.
   * **Interview History & Results:** Review performance reports, scores across 5 core competencies, radar charts, question critiques, actionable recommendations, and export results.
-  * **Personal 3D Avatar from Photo:** Upload a front-facing portrait photo to generate a personal 3D avatar (feasibility demonstrated via the Avaturn spike).
-  * **Job Posting Discovery:** Browse, search, filter, and view details of active recruiter Job Postings.
-  * **Job Application Submission:** Submit job applications to active Job Postings and track application status.
+  * **Personal 3D Avatar:** Access the embedded Avaturn generator to create and customize a personal 3D avatar, which RoleCue stores as a VRM asset.
+  * **Job Posting Discovery:** Browse, search, filter, and view details of approved recruiter Job Postings.
+  * **Job Application Submission:** Apply to approved Job Postings by uploading a CV, completing the required technical interview, and submitting the resulting Application; track application status.
   * **Membership Management:** Subscribe and unsubscribe to Candidate membership.
 * **Boundary Invariant:** Candidates do **NOT** purchase practice credit packages or submit refund dispute claims. Candidates **never** view, edit, or confirm Interview Blueprints.
 
 #### 1.4. Recruiter (Employer Hiring Representative)
 * **Definition:** A verified recruiter or hiring representative publishing job opportunities and reviewing incoming applications.
 * **Canonical Capabilities:**
-  * **Create Job Posting:** Author and publish a Job Posting (which is the company's Job Description).
+  * **Create Job Posting:** Begin a Job Posting (the company's Job Description) from JD-like content; optionally review and confirm AI-extracted structured information.
+  * **Configure Job Posting Interview:** Before submission for approval, select the company 3D interviewer model and Voice Profile that Candidates must use for that Job Posting's interview.
   * **Update Job Posting:** Modify requirements, details, or metadata of existing Job Postings.
   * **Archive Job Posting:** Archive inactive or filled Job Postings.
-  * **View & Search Own Job Postings:** Inspect, filter, and search own published and archived Job Postings.
+  * **View & Search Own Job Postings:** Inspect, filter, and search own submitted, approved, rejected, and archived Job Postings.
   * **Search & Filter Applications:** Filter candidate applications submitted to own Job Postings.
-  * **View Application Detail:** Review applicant profile, contact details, and resume reference.
+  * **View Application Detail:** Review applicant profile, contact details, CV/resume, and the Interview Result attached to the Application.
   * **Approve / Reject Application:** Render a definitive **Approve** or **Reject** status decision.
 * **Boundary Invariant:**
   * **Job Posting IS the Company JD:** There is no separate "Corporate JD" entity or workflow.
@@ -146,10 +147,10 @@ classDiagram
 * **Definition:** A privileged operator responsible for platform security, content oversight, AI calibration, and financial governance.
 * **Canonical Capabilities:**
   * **Account Governance:** View and filter user accounts; lock and unlock accounts.
-  * **Job Posting Governance:** View and filter published Job Postings; approve and reject Job Postings.
+  * **Job Posting Governance:** View and filter submitted Job Postings; approve and reject Job Postings.
   * **Interview Session Oversight:** Search and filter interview sessions; view interview session detail.
   * **Interview Feature Configuration:** Configure interview features and runtime toggles.
-  * **AI Behaviour Management:** Manage AI system prompts and probing instructions.
+  * **AI Behaviour Management:** Manage AI system prompts and Question guidance.
   * **Evaluation Criteria Calibration:** Edit evaluation criteria, rubric templates, and scoring weights.
   * **Voice Profile Catalog Management:** View voice profiles, fetch voice profiles from external TTS providers, and delete voice profiles.
   * **Financial Governance:** View payment transactions, generate revenue reports, and update membership prices.
@@ -178,7 +179,7 @@ RoleCue's finalized capabilities are organized semantically into nine cohesive d
   * Register new account
   * Log in & log out
   * View & edit own profile
-  * Password recovery (forgot password, reset password)
+  * Forgot Password (including password-reset behavior)
   * Change password
   * Enable 2-factor authentication
 
@@ -194,16 +195,17 @@ RoleCue's finalized capabilities are organized semantically into nine cohesive d
 ### 2.3. Interview Planning & Configuration
 * **Actors:** Candidate, System
 * **Capabilities:**
-  * Configure composite interview session (interviewer persona, voice profile, 3D environment, difficulty level, session duration)
+  * Configure a Target JD interview with an available system or eligible Candidate-owned personal 3D interviewer model, an available Voice Profile, 3D environment, difficulty level, and session duration
+  * Use the Job Posting's locked company 3D interviewer model and Voice Profile for a Job Posting interview
   * Generate internal Interview Blueprint (system-executed, strictly hidden from candidate)
 
 ### 2.4. Real-Time Interview Simulation
 * **Actors:** Candidate, System Handler
 * **Capabilities:**
-  * Preflight hardware check (microphone and audio readiness)
+  * Test Audio and Interview Readiness (microphone and audio readiness)
   * Join and start 3D mock interview simulation
   * Real-time conversational spoken interaction with 3D avatar (STT / TTS with lip-sync visemes)
-  * Adaptive technical probing and question depth progression
+  * LLM-determined Question progression
   * Pause, resume, or end interview session
   * Terminate abandoned interview session (System Handler)
 
@@ -220,13 +222,14 @@ RoleCue's finalized capabilities are organized semantically into nine cohesive d
 ### 2.6. Personal 3D Avatar
 * **Actors:** Candidate
 * **Capabilities:**
-  * Generate personal 3D avatar from an uploaded portrait photograph (feasibility proven via Avaturn spike)
+  * Generate and customize a personal 3D avatar through the embedded Avaturn iframe; RoleCue converts the received final GLB to a persisted VRM asset
   * View personal 3D avatar in candidate profile/library
 
 ### 2.7. Recruiter Job Posting Management
 * **Actors:** Recruiter
 * **Capabilities:**
-  * Create Job Posting (company JD)
+  * Create Job Posting from JD-like content, with optional AI extraction for Recruiter review and confirmation
+  * Select the company 3D interviewer model and Voice Profile before submitting the Job Posting for Admin approval
   * Update Job Posting
   * Archive Job Posting
   * View own Job Postings
@@ -235,8 +238,10 @@ RoleCue's finalized capabilities are organized semantically into nine cohesive d
 ### 2.8. Job Application Workflow
 * **Actors:** Candidate, Recruiter
 * **Capabilities:**
-  * Candidate browses, searches, and views active Job Postings
-  * Candidate submits application with profile details and resume reference
+  * Candidate browses, searches, and views approved Job Postings
+  * Candidate selects Apply and uploads a CV/resume
+  * Candidate completes the required Job Posting technical interview using its company-defined 3D interviewer model and Voice Profile
+  * System stores the Interview Result and attaches it to the Application with candidate application information and CV/resume before making the completed Application available to the Recruiter
   * Candidate tracks application status
   * Recruiter searches and filters received applications
   * Recruiter views candidate application detail

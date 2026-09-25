@@ -30,8 +30,8 @@ Provide a lifelike, engaging human presence during virtual technical interviews.
   A rigged humanoid 3D mesh rendered client-side using WebGL. Supports real-time head movements, idle animations, eye blinks, and facial blend-shape morph targets.
 * **Blend-Shape Visemes:**
   Standardized mouth blend-shapes corresponding to phonemic sounds. Morph target weights are interpolated in real time based on timestamped viseme frames delivered with TTS audio.
-* **Personal 3D Avatar from Photo:**
-  An accepted product capability enabling Candidates to generate a fully rigged, personal 3D humanoid avatar from a single uploaded portrait photo. Technical feasibility has been proven via the Avaturn integration spike. The resulting avatar is stored in the candidate's profile library.
+* **Personal 3D Avatar:**
+  An accepted product capability delivered through RoleCue's embedded free Avaturn iframe experience. Avaturn handles capture instructions, the three required photos, validation and retakes, preview generation, customization, and final GLB generation. RoleCue receives the GLB, converts it to VRM, persists the Candidate-owned VRM avatar, and stores it in the Candidate's profile library.
 * **Voice Profile (`voice_profiles`):**
   A synthesized vocal persona sourced from third-party Text-to-Speech (TTS) providers. Encapsulates external voice IDs, language, accent, gender, and speaking rate parameters. Curated and managed by Administrators.
 * **3D Environment Presets:**
@@ -44,9 +44,9 @@ Provide a lifelike, engaging human presence during virtual technical interviews.
 ## 3. Actors Involved
 
 * **Candidate:**
-  * Uploads a portrait photo to generate a Personal 3D Avatar.
+  * Accesses the Personal 3D Avatar Generator from RoleCue and completes capture and customization inside the embedded Avaturn experience.
   * Views personal 3D avatar in their profile library.
-  * Selects preferred interviewer persona, voice profile, and 3D environment during composite interview configuration.
+  * For a Target JD interview, selects an available system 3D interviewer or eligible Candidate-owned personal 3D model, an available Voice Profile, and 3D environment. A Recruiter Job Posting interview instead uses the company-defined 3D interviewer model and Voice Profile without Candidate override.
 * **Administrator:**
   * Curates and manages **Voice Profiles** sourced from external TTS providers (viewing voice profiles, fetching new voice profiles from TTS providers, deleting voice profiles).
   * *Important Invariant:* The Admin does **NOT** manage the 3D avatar catalog or 3D background presets (which are built-in platform presets).
@@ -58,10 +58,12 @@ Provide a lifelike, engaging human presence during virtual technical interviews.
 ```mermaid
 flowchart TD
     subgraph PersonalAvatar["Personal 3D Avatar Generation Flow"]
-        P1["Candidate Portrait Photo (Upload)"] --> P2["Preflight Validation (Single face, lighting)"]
-        P2 --> P3["3D Reconstruction Pipeline (Spike Proven)"]
-        P3 --> P4["Rigged Humanoid Mesh with Blend-Shapes"]
-        P4 --> P5["Stored in Candidate Profile Library"]
+        P1["RoleCue Personal 3D Avatar Generator"] --> P2["Embedded free Avaturn iframe"]
+        P2 --> P3["Avaturn capture instructions and 3 required photos"]
+        P3 --> P4["Avaturn validation / retake, preview, and customization"]
+        P4 --> P5["Avaturn final GLB"]
+        P5 --> P6["RoleCue receives GLB and converts to VRM"]
+        P6 --> P7["Persist Candidate-owned VRM Personal 3D Avatar"]
     end
 
     subgraph RuntimeSync["Runtime Spoken Lip-Sync Flow"]
@@ -74,7 +76,7 @@ flowchart TD
 
     subgraph AdminVoice["Admin Voice Profile Governance"]
         V1["Fetch Available Voice Profiles from TTS Provider"] --> V2["Manage / Curate Voice Profiles"]
-        V2 --> V3["Available in Candidate Interview Configuration"]
+        V2 --> V3["Available for Target JD and Job Posting Configuration"]
     end
 ```
 
@@ -84,16 +86,18 @@ flowchart TD
 
 1. **3D Scope is First-Class:**
    3D virtual interaction is a primary, ratified product pillar of RoleCue. It is not an experimental or optional decoration.
-2. **Personal 3D Avatar from Photo is Accepted:**
-   Generating a personal 3D avatar from a candidate's photo is an accepted product capability. Technical feasibility was proven via the Avaturn integration spike. Production integration details may continue to evolve, but the capability is officially in-scope and accepted.
-3. **No 3D Marketplace:**
+2. **Personal 3D Avatar Integration is Accepted:**
+   The embedded free Avaturn iframe integration is accepted production scope. Avaturn owns capture, photo validation and retakes, preview generation, customization, and final GLB generation. RoleCue does not orchestrate those activities through Avaturn Pro APIs or backend Avaturn API calls.
+3. **VRM is the RoleCue Production Artifact:**
+   RoleCue receives Avaturn's final GLB as an intermediate asset, converts it to VRM, persists the VRM Personal 3D Avatar, and associates it with the owning Candidate.
+4. **No 3D Marketplace:**
    RoleCue does **NOT** provide a 3D asset marketplace, community model sharing, or creator monetization. Avatars are restricted to system presets and candidate-owned personal avatars.
-4. **Admin Governance Boundary:**
+5. **Admin Governance Boundary:**
    * **Admin DOES manage:** Voice Profiles sourced from TTS providers (viewing, fetching from provider APIs, deleting).
    * **Admin does NOT manage:** 3D avatar models or 3D room environments. These 3D assets are built-in system presets.
-5. **Speech and Facial Synchronization:**
+6. **Speech and Facial Synchronization:**
    TTS audio playback and 3D facial morph animation articulate in tight visual synchronization.
-6. **Graceful 2D Degradation:**
+7. **Graceful 2D Degradation:**
    If the candidate's browser environment reports WebGL context loss or insufficient rendering capabilities, the system provides seamless degradation to 2D Waveform mode without dropping the active call turn.
 
 ---
@@ -101,7 +105,7 @@ flowchart TD
 ## 6. Relationships to Other Domains
 
 * **[[01_Domains/Interview/README|Interview Domain]]:**
-  Provides the visual interviewer and vocal presentation during live mock interviews. Configured during the composite `Configure Interview Session` step.
+  Provides the visual interviewer and vocal presentation during live interviews. A Candidate may choose an eligible personal VRM avatar for a Target JD interview; a Job Posting interview uses the Recruiter's locked company configuration.
 * **[[01_Domains/Administration/README|Administration Domain]]:**
   Administrators manage the catalog of available Voice Profiles sourced from external TTS providers.
 * **[[01_Domains/Auth/README|Auth Domain]]:**
@@ -112,4 +116,4 @@ flowchart TD
 ## 7. External Integrations
 
 * **TTS Provider:** Synthesizes spoken voice audio and produces phoneme/viseme timing metadata for facial blend-shape animation. Sourced voice models are cataloged as Voice Profiles.
-* **3D Reconstruction Pipeline:** Reconstructs rigged 3D humanoid mesh avatars from candidate photographs (feasibility demonstrated through Avaturn spike).
+* **Avaturn:** Provides the embedded free iframe experience for capture, validation, preview, customization, and final GLB generation. RoleCue receives the final GLB and performs GLB-to-VRM conversion and VRM persistence.
